@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tarix</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Savollar bazasi eng birinchi yuklanadi -->
+<script src="savollar.js"></script>
 <style>
 :root{--night:#0A1230;--night2:#111F4D;--lapis:#1E4BA8;--tile:#22B7B0;--gold:#D9AE56;--ink:#EFEBDD;--mute:#9FAACB;
 --line:rgba(217,174,86,.26);--card:rgba(255,255,255,.06);
@@ -164,12 +166,9 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 <button data-go="home" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Bosh</button>
 <button data-go="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Testlar</button>
 <button data-go="season"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l4 2V6l4 2 4-2v5l4-2v12zM9 21v-4h6v4"/></svg>Mavsum</button>
-<button data-go="rating"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Reyting</button>
+<button data-go="rating"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 0 3 3"/></svg>Reyting</button>
 <button data-go="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
 </div></nav>
-
-<!-- Savollar bazasi ulanishi -->
-<script src="savollar.js"></script>
 
 <script>
 const tg=window.Telegram&&window.Telegram.WebApp;
@@ -191,33 +190,42 @@ if(y==="1336")toast("To'g'ri! Amir Temur 1336 yilda tug'ilgan.");else{b.classLis
 /* karvon */
 const streak=0;$("road").innerHTML=["Xiva","Buxoro","Samarqand","Toshkent","Farg'ona"].map((c,i)=>`<div class="stop ${i===Math.min(streak,4)?"here":""}">${i===Math.min(streak,4)?'<span class="cam">🐪</span>':""}<i></i>${c}</div>`).join("");
 
-/* davrlar (savollari borlari ochiladigan qilindi) */
+/* Davrlar va ularga mos savollar kodi */
 const eras=[
-["Qadimgi davr","Miloddan avvalgi davr - VII asr","flame","#8A3F10","#C27A2A",5, 0],
-["Arab xalifaligi va islom madaniyati","VIII-XII asrlar","minaret","#0F5E63","#1B9AA0",12, null],
-["Temuriylar davri","XIV-XV asrlar","dome","#1E3F9E","#3560C8",5, 2],
-["Xonliklar davri","XVI-XIX asrlar","fort","#1C5B3E","#2E8B5F",12, null],
-["Mustamlaka va sovet davri","1860-1991 yillar","cotton","#5A1F1F","#9A3434",15, null],
-["Mustaqillik yillari","1991 yildan hozirgacha","sun","#1D6FB8","#5AB2E8",15, null]
+  {title:"Qadimgi davr", sub:"Miloddan avvalgi davr - VII asr", icon:"flame", c1:"#8A3F10", c2:"#C27A2A", key:0},
+  {title:"Arab xalifaligi va islom madaniyati", sub:"VIII-XII asrlar", icon:"minaret", c1:"#0F5E63", c2:"#1B9AA0", key:null},
+  {title:"Temuriylar davri", sub:"XIV-XV asrlar", icon:"dome", c1:"#1E3F9E", c2:"#3560C8", key:2},
+  {title:"Xonliklar davri", sub:"XVI-XIX asrlar", icon:"fort", c1:"#1C5B3E", c2:"#2E8B5F", key:null},
+  {title:"Mustamlaka va sovet davri", sub:"1860-1991 yillar", icon:"cotton", c1:"#5A1F1F", c2:"#9A3434", key:null},
+  {title:"Mustaqillik yillari", sub:"1991 yildan hozirgacha", icon:"sun", c1:"#1D6FB8", c2:"#5AB2E8", key:null}
 ];
 
-$("eras").innerHTML=eras.map((e,idx)=>`
-<button class="era" style="--a:${e[3]};--b:${e[4]}" ${e[5]!==null?`data-era="${e[5]}"`:`data-soon="${e[0]}"`}>
-${gl(e[2])}<strong>${e[0]}</strong><small>${e[1]}</small>
-<div class="bar"><i style="width:0%"></i></div><em>0 / ${e[5]!==null && window.SAVOLLAR && window.SAVOLLAR[e[5]] ? window.SAVOLLAR[e[5]].length : e[4]} test</em></button>`
-).join("");
+function renderEras(){
+  $("eras").innerHTML=eras.map(e=>{
+    let count=0;
+    if(e.key!==null && window.SAVOLLAR && window.SAVOLLAR[e.key]){
+      count=window.SAVOLLAR[e.key].length;
+    }
+    let attr = e.key!==null ? `data-era="${e.key}"` : `data-soon="${e.title}"`;
+    return `<button class="era" style="--a:${e.c1};--b:${e.c2}" ${attr}>
+      ${gl(e.icon)}<strong>${e.title}</strong><small>${e.sub}</small>
+      <div class="bar"><i style="width:0%"></i></div><em>0 / ${count} test</em>
+    </button>`;
+  }).join("");
+}
+renderEras();
 
-/* Test oynasi va logikasi */
+/* Test jarayoni oynasi */
 let activeQuestions=[];
 let currentQIndex=0;
 let score=0;
 
-function startTest(eraIndex){
-  if(!window.SAVOLLAR || !window.SAVOLLAR[eraIndex]){
+function startTest(eraKey){
+  if(!window.SAVOLLAR || !window.SAVOLLAR[eraKey] || window.SAVOLLAR[eraKey].length===0){
     toast("Bu davr uchun hali savollar kiritilmagan.");
     return;
   }
-  activeQuestions=window.SAVOLLAR[eraIndex];
+  activeQuestions=window.SAVOLLAR[eraKey];
   currentQIndex=0;
   score=0;
   showQuestionModal();
@@ -238,50 +246,52 @@ function showQuestionModal(){
   modal.id="q-modal";
   modal.style.cssText="position:fixed;inset:0;background:var(--night);z-index:100;padding:20px;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;";
   
-  let optsHtml=qData.o.map((opt,i)=>`<button class="opt-btn" data-opt="${i}" style="width:100%;padding:12px;margin:6px 0;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;text-align:left;color:var(--ink);">${opt}</button>`).join("");
+  let optsHtml=qData.o.map((opt,i)=>`<button class="opt-btn" data-opt="${i}" style="width:100%;padding:14px;margin:6px 0;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;text-align:left;color:var(--ink);">${opt}</button>`).join("");
 
   modal.innerHTML=`
     <div style="max-width:500px;margin:0 auto;width:100%;">
       <p class="sub">Savol ${currentQIndex+1} / ${activeQuestions.length}</p>
-      <h3 style="margin:10px 0 20px;font-size:18px;">${qData.q}</h3>
+      <h3 style="margin:12px 0 20px;font-size:18px;line-height:1.4">${qData.q}</h3>
       <div id="quiz-opts">${optsHtml}</div>
-      <button id="close-quiz" style="margin-top:20px;padding:10px;background:rgba(255,255,255,.1);border-radius:10px;width:100%;color:var(--ink);">Chiqish</button>
+      <button id="close-quiz" style="margin-top:20px;padding:12px;background:rgba(255,255,255,.1);border-radius:10px;width:100%;color:var(--ink);text-align:center;">Testdan chiqish</button>
     </div>
   `;
   document.body.appendChild(modal);
 
   modal.querySelectorAll(".opt-btn").forEach(btn=>{
     btn.onclick=(e)=>{
-      let selected=parseInt(e.target.getAttribute("data-opt"));
+      modal.querySelectorAll(".opt-btn").forEach(b=>b.disabled=true);
+      let selected=parseInt(btn.getAttribute("data-opt"));
       if(selected===qData.a){
-        e.target.style.background="#14654F";
+        btn.style.background="#14654F";
+        btn.style.borderColor="#2FD0A0";
         score++;
-        toast("To'g'ri!");
+        toast("To'g'ri javob!");
       } else {
-        e.target.style.background="#6C2430";
-        toast("Noto'g'ri! " + qData.izoh);
+        btn.style.background="#6C2430";
+        btn.style.borderColor="#E0586E";
+        toast("Noto'g'ri! " + (qData.izoh||""));
       }
       setTimeout(()=>{
         currentQIndex++;
         showQuestionModal();
-      }, 1500);
+      }, 1600);
     };
   });
 
   modal.querySelector("#close-quiz").onclick=()=>modal.remove();
 }
 
-/* testlar ro'yxati */
-const tests=[["Qadimgi davr, 1-test","Davrlar",15,23,"4.2k",0],["Arab xalifaligi, 1-test","Davrlar",15,23,"3.1k",0],
-["Temuriylar davri, 1-test","Davrlar",15,23,"3.5k",1],["Xonliklar davri, 1-test","Davrlar",15,23,"2.2k",0],
+/* Testlar va boshqa bo'limlar */
+const tests=[["Qadimgi davr, 1-test","Davrlar",5,10,"4.2k",0],["Arab xalifaligi, 1-test","Davrlar",15,23,"3.1k",0],
+["Temuriylar davri, 1-test","Davrlar",5,10,"3.5k",0],["Xonliklar davri, 1-test","Davrlar",15,23,"2.2k",0],
 ["Sertifikat sinov testi","Sertifikat",50,60,"1.6k",1]];
 let cat="Barchasi",term="";
 function drawTests(){$("tests").innerHTML=tests.filter(t=>(cat==="Barchasi"||t[1]===cat)&&t[0].toLowerCase().includes(term)).map(t=>
-`<div class="card test"><b>${t[0]}</b>${t[5]?'<span class="vip">A\'zolar</span>':""}<p class="meta">${t[2]} savol &nbsp;·&nbsp; ${t[3]} daqiqa &nbsp;·&nbsp; ${t[4]} kishi</p><button class="go ${t[5]?"lock":""}" data-soon="${t[0]}">${t[5]?"Ochish uchun a'zo bo'ling":"Ishlash"}</button></div>`).join("")||'<p class="note">Hech narsa topilmadi. Boshqa so\'z bilan qidirib ko\'ring.</p>'}
+`<div class="card test"><b>${t[0]}</b>${t[5]?'<span class="vip">A\'zolar</span>':""}<p class="meta">${t[2]} savol &nbsp;·&nbsp; ${t[3]} daqiqa &nbsp;·&nbsp; ${t[4]} kishi</p><button class="go ${t[5]?"lock":""}" ${t[0].includes("Qadimgi")?'data-era="0"':t[0].includes("Temuriylar")?'data-era="2"':`data-soon="${t[0]}"`}>${t[5]?"Ochish uchun a'zo bo'ling":"Ishlash"}</button></div>`).join("")||'<p class="note">Hech narsa topilmadi.</p>'}
 $("chips").innerHTML=["Barchasi","Davrlar","Sertifikat"].map((c,i)=>`<button class="chip ${i?"":"on"}" data-cat="${c}">${c}</button>`).join("");
 $("q").oninput=e=>{term=e.target.value.toLowerCase();drawTests()};drawTests();
 
-/* mavsum, reyting, unvonlar */
 $("miles").innerHTML=[["Ulug'bek madrasasi","100 ball"],["Sherdor madrasasi","300 ball"],["Tillakori madrasasi","600 ball"]].map(m=>`<div class="mile off">${gl("dome")}<div><b>${m[0]}</b><p class="sub">${m[1]}</p></div></div>`).join("");
 const R=[["Aziz",940],["Madina",905],["Jasur",870],["Dilnoza",820],["Sardor",790]];
 $("podium").innerHTML=[1,0,2].map(i=>`<div class="pod"><div class="av">${R[i][0][0]}</div><b>${R[i][0]}</b><small>${R[i][1]} ball</small><div class="st" style="height:${[110,80,60][i]}px">${i+1}</div></div>`).join("");
@@ -291,7 +301,7 @@ $("titles").innerHTML=[["Bitikchi","0 ball",1],["Mirzo","200 ball"],["Mudarris",
 let tm;function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>el.classList.remove("show"),2400)}
 
 document.addEventListener("click",e=>{
-const eraBtn=e.target.closest("[data-era]");if(eraBtn){startTest(eraBtn.dataset.era);return;}
+const eraBtn=e.target.closest("[data-era]");if(eraBtn){startTest(parseInt(eraBtn.dataset.era));return;}
 const s=e.target.closest("[data-soon]");if(s){toast(s.dataset.soon+" bo'limi tez orada qo'shiladi.");return}
 const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));drawTests();return}
 const g=e.target.closest("[data-go]");if(g){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+g.dataset.go).classList.add("on");
