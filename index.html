@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tarix</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body {
+    margin: 0; padding: 16px; font-family: system-ui, sans-serif;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+  }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.sub { margin: 0 0 20px; opacity: .7; }
+  .grid { display: grid; gap: 12px; }
+  button {
+    padding: 16px; font-size: 16px; text-align: left; border: 0; border-radius: 12px;
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    color: var(--tg-theme-text-color, #000000);
+  }
+  #msg { margin-top: 20px; opacity: .8; }
+</style>
+</head>
+<body>
+  <h1>📚 Tarix</h1>
+  <p class="sub" id="hello">Sertifikatga tayyorgarlik</p>
+
+  <div class="grid">
+    <button onclick="soon('Testlar')">📝 Testlar</button>
+    <button onclick="soon('Darsliklar')">📖 Darsliklar</button>
+    <button onclick="soon('Jonli darslar')">🎥 Jonli darslar</button>
+    <button onclick="soon('Reyting')">🏆 Reyting</button>
+    <button onclick="soon('Kitoblar')">📚 Kitoblar / manbalar</button>
+  </div>
+  <div id="msg"></div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+
+  const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if (user) {
+    document.getElementById("hello").textContent = "Salom, " + user.first_name + "!";
+  }
+
+  function soon(name) {
+    document.getElementById("msg").textContent = name + " bo'limi tez orada qo'shiladi.";
+  }
+</script>
+</body>
+</html>
