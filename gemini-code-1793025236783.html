@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tarix</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--night:#0A1230;--night2:#111F4D;--lapis:#1E4BA8;--tile:#22B7B0;--gold:#D9AE56;--ink:#EFEBDD;--mute:#9FAACB;
+--line:rgba(217,174,86,.26);--card:rgba(255,255,255,.06);
+--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+body{background:var(--night) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23D9AE56' stroke-opacity='.09'%3E%3Crect x='14' y='14' width='28' height='28'/%3E%3Crect x='14' y='14' width='28' height='28' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
+color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;text-align:left}
+:focus-visible{outline:2px solid var(--tile);outline-offset:2px}
+.app{max-width:520px;margin:0 auto;padding:0 16px calc(92px + env(safe-area-inset-bottom,0))}
+h1,h2,h3{font-family:var(--serif);font-weight:700}
+h2{font-size:20px;margin:26px 0 4px}
+.sub{color:var(--mute);font-size:14px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:12px}
+
+/* kirish ekrani */
+#splash{position:fixed;inset:0;z-index:50;display:grid;place-items:center;text-align:center;
+background:linear-gradient(#070D24,#13286E 70%,#1E4BA8);transition:opacity .6s}
+#splash.out{opacity:0;pointer-events:none}
+#splash .stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 30% 8%,#fff,transparent),radial-gradient(1.5px 1.5px at 55% 22%,#fff,transparent),radial-gradient(1px 1px at 78% 12%,#fff,transparent),radial-gradient(1px 1px at 90% 30%,#fff,transparent),radial-gradient(1px 1px at 20% 40%,#fff,transparent),radial-gradient(1.5px 1.5px at 66% 45%,#fff,transparent);animation:tw 3s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.45}to{opacity:1}}
+.moon{position:absolute;top:calc(48px + env(safe-area-inset-top,0));right:34px;width:30px;height:30px;border-radius:50%;box-shadow:inset -9px -3px 0 0 var(--gold)}
+#splash .sk{position:absolute;left:0;right:0;bottom:0;width:100%;color:#070D24;animation:rise 1.4s ease-out both}
+@keyframes rise{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+#splash h1{position:relative;font-size:54px;letter-spacing:.04em;color:var(--gold);margin-top:-80px}
+#splash p{position:relative;color:var(--ink);opacity:.85;margin-top:6px}
+
+/* bosh sahifa */
+.hero{position:relative;margin:0 -16px;padding:calc(20px + env(safe-area-inset-top,0)) 18px 112px;overflow:hidden;
+background:linear-gradient(#1B3E92,#14286B 58%,var(--night2))}
+.hero::before{content:"";position:absolute;inset:0;background:url(img/hero.jpg) center/cover;opacity:.35;mix-blend-mode:luminosity}
+.hero .moon{top:22px;right:22px;width:22px;height:22px;box-shadow:inset -6px -2px 0 0 var(--gold)}
+.hero .sk{position:absolute;left:0;right:0;bottom:-1px;width:100%;color:var(--night)}
+.hero h1{position:relative;font-size:27px;line-height:1.15}
+.hero p{position:relative;color:#C9D4F2;margin-top:4px;font-size:14px}
+.coins{position:relative;display:inline-block;margin-top:14px;padding:4px 12px;border:1px solid var(--gold);border-radius:99px;color:var(--gold);font-size:14px}
+.q{margin-top:-6px}
+.q h3{font-size:17px;margin:2px 0 10px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);text-align:center}
+.opt.ok{background:#14654F;border-color:#2FD0A0}.opt.no{background:#6C2430;border-color:#E0586E}
+.road{display:flex;justify-content:space-between;position:relative;margin:30px 6px 4px}
+.road::before{content:"";position:absolute;left:8px;right:8px;top:9px;border-top:2px dashed var(--line)}
+.stop{position:relative;text-align:center;font-size:12px;color:var(--mute);width:56px}
+.stop i{display:block;width:14px;height:14px;margin:2px auto 6px;border-radius:50%;background:var(--night);border:2px solid var(--gold)}
+.stop.here i{background:var(--gold)}
+.stop .cam{position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:20px}
+.era{position:relative;display:block;width:100%;min-height:96px;margin-top:10px;padding:16px 16px 14px 86px;border-radius:18px;overflow:hidden;background:linear-gradient(120deg,var(--a),var(--b))}
+.era .gl{position:absolute;left:16px;top:50%;margin-top:-26px;width:52px;height:52px;color:rgba(255,255,255,.92)}
+.era strong{display:block;font-family:var(--serif);font-size:17px;color:#fff}
+.era small{display:block;color:rgba(255,255,255,.78);font-size:13px}
+.bar{height:5px;border-radius:5px;background:rgba(0,0,0,.28);margin:10px 0 4px}.bar i{display:block;height:100%;border-radius:5px;background:var(--gold)}
+.era em{font-style:normal;font-size:12.5px;color:rgba(255,255,255,.85)}
+
+/* ro'yxatlar */
+.search{width:100%;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05)}
+.chips{display:flex;gap:8px;margin-top:12px;overflow-x:auto}
+.chip{flex:none;padding:7px 14px;border-radius:99px;border:1px solid var(--line);font-size:14px}
+.chip.on{background:var(--gold);color:#241A05;border-color:var(--gold);font-weight:600}
+.test .meta{color:var(--mute);font-size:13px;margin:4px 0 12px}
+.vip{font-size:12px;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:1px 8px;margin-left:6px;vertical-align:2px}
+.go{width:100%;padding:11px;border-radius:12px;text-align:center;background:var(--lapis);font-weight:600}
+.go.lock{background:rgba(255,255,255,.08);color:var(--mute)}
+.mile{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.mile:first-of-type{border-top:0}.mile .gl{width:34px;height:34px;color:var(--gold);flex:none}.mile.off .gl{color:var(--mute)}
+.podium{display:flex;align-items:flex-end;gap:8px;margin-top:18px}
+.pod{flex:1;text-align:center}.pod .av{margin:0 auto 6px}
+.pod .st{border-radius:12px 12px 0 0;background:linear-gradient(var(--lapis),var(--night2));border:1px solid var(--line);display:grid;place-items:start center;padding-top:8px;font:700 22px var(--serif);color:var(--gold)}
+.pod small{display:block;color:var(--mute);font-size:12.5px}
+.av{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font:700 20px var(--serif);background:var(--lapis);border:2px solid var(--gold)}
+.rk{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.rk:first-child{border-top:0}
+.rk b:first-child{width:22px;color:var(--mute)}.rk span{flex:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.grid .card{margin:0}
+.grid b{font:700 24px var(--serif);display:block}.grid span{color:var(--mute);font-size:13px}
+.note{margin-top:14px;font-size:13px;color:var(--mute)}
+
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(10,18,48,.94);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
+nav div{max-width:520px;margin:0 auto;display:flex}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;font-size:12px;color:var(--mute)}
+nav svg{width:22px;height:22px}nav [aria-current]{color:var(--gold);font-weight:600}
+#toast{position:fixed;left:16px;right:16px;bottom:calc(78px + env(safe-area-inset-bottom,0));max-width:488px;margin:0 auto;z-index:30;
+background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="sky" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="132" width="390" height="18"/>
+<rect x="26" y="40" width="12" height="95"/><rect x="22" y="58" width="20" height="5"/><path d="M26 40L32 20L38 40Z"/>
+<rect x="48" y="105" width="52" height="30"/><path d="M48 105Q74 68 100 105Z"/>
+<rect x="118" y="62" width="10" height="73"/><path d="M118 62Q123 48 128 62Z"/>
+<rect x="262" y="62" width="10" height="73"/><path d="M262 62Q267 48 272 62Z"/>
+<rect x="125" y="48" width="140" height="87"/>
+<rect x="298" y="88" width="54" height="47"/><rect x="306" y="76" width="38" height="12"/><path d="M303 76Q325 20 347 76Z"/><rect x="324" y="12" width="2" height="12"/>
+<rect x="368" y="70" width="9" height="65"/><path d="M368 70L372.5 54L377 70Z"/></g>
+<path d="M165 135V86Q195 48 225 86V135Z" fill="#16296B"/><circle cx="195" cy="104" r="3.2" fill="#D9AE56"/></symbol>
+<symbol id="g-flame" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c.8 4 5.5 6 5.5 11.2a5.5 5.5 0 0 1-11 0c0-2.8 1.8-4 2.3-6.2 1 .8 1.7 1.8 2 3.2C11.6 8 12.4 5.4 12 2z"/></symbol>
+<symbol id="g-minaret" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1l3 6h-1.5V9h2v2h-2v11h-3V11h-2V9h2V7H9z"/></symbol>
+<symbol id="g-dome" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1h.8v3.2C17 5.6 19 9 19 12v1h2v2h-2v6H5v-6H3v-2h2v-1c0-3 2-6.400 6.200-7.800V1z"/></symbol>
+<symbol id="g-fort" viewBox="0 0 24 24"><path fill="currentColor" d="M2 6h3v2h2V6h3v2h4V6h3v2h2V6h3v15H2zm8 7v8h4v-8a2 2 0 0 0-4 0z"/></symbol>
+<symbol id="g-cotton" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="8" cy="9" r="4"/><circle cx="16" cy="9" r="4"/><circle cx="12" cy="14" r="4"/><path d="M6 17h12l-2 5H8z"/></g></symbol>
+<symbol id="g-sun" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="12" r="4.500"/><path d="M11 1h2v4h-2zM11 19h2v4h-2zM1 11h4v2H1zM19 11h4v2h-4zM4.200 5.600l1.400-1.400 2.800 2.800-1.400 1.400zM15.600 17l1.400-1.400 2.800 2.800-1.400 1.400zM17 8.400l-1.400-1.400 2.800-2.800 1.400 1.400zM5.600 19.800L4.200 18.400 7 15.600l1.400 1.400z"/></g></symbol>
+</defs></svg>
+
+<div id="splash"><div class="stars"></div><div class="moon"></div>
+<div><h1>Tarix</h1><p>Ajdodlar izidan</p></div>
+<svg class="sk" viewBox="0 0 390 150" preserveAspectRatio="xMidYMax meet"><use href="#sky"/></svg></div>
+
+<main class="app">
+<section class="view on" id="v-home">
+  <div class="hero"><span class="moon"></span>
+    <h1 id="hello">Salom!</h1><p>Bugun tarixdan nimani o'rganamiz?</p>
+    <span class="coins" id="coins">0 tanga</span>
+    <svg class="sk" viewBox="0 0 390 150" preserveAspectRatio="xMidYMax slice"><use href="#sky"/></svg></div>
+  <div class="card q"><p class="sub">Kun savoli</p><h3>Amir Temur qaysi yilda tug'ilgan?</h3><div class="opts" id="opts"></div></div>
+  <div class="card"><h3 style="font-size:17px">Ipak yo'li karvoni</h3>
+    <p class="sub">Har kuni mashq qilsangiz, karvon bir manzil oldinga yuradi.</p><div class="road" id="road"></div></div>
+  <h2>Davrlar</h2><p class="sub">Davrni tanlang va testlarni boshlang.</p><div id="eras"></div>
+</section>
+
+<section class="view" id="v-tests">
+  <h2 style="margin-top:22px">Testlar</h2><p class="sub">Davr bo'yicha tanlang yoki nomidan qidiring.</p>
+  <input class="search" id="q" placeholder="Test nomi bo'yicha qidirish" aria-label="Qidirish">
+  <div class="chips" id="chips"></div><div id="tests"></div>
+</section>
+
+<section class="view" id="v-season">
+  <h2 style="margin-top:22px">Registon qurilishi</h2><p class="sub">Joriy mavsum. Ball to'plang, madrasalarni quring.</p>
+  <div class="card"><div class="bar" style="background:rgba(255,255,255,.12)"><i style="width:0%"></i></div><p class="sub">0 ball to'plandi</p>
+    <div id="miles"></div></div>
+  <div class="card"><b>Mavsum testlari a'zolar uchun</b><p class="sub" style="margin-top:4px">Qatnashish uchun a'zolik kerak. Sovrinlar haqida ma'lumot tez orada.</p>
+    <button class="go" style="margin-top:12px" data-soon="Mavsum">Qatnashish</button></div>
+</section>
+
+<section class="view" id="v-rating">
+  <h2 style="margin-top:22px">Reyting</h2><p class="sub">Har testning birinchi urinishi bo'yicha jami ball.</p>
+  <div class="podium" id="podium"></div><div class="card" id="ranks"></div>
+  <p class="note">Ro'yxat hozircha namuna.</p>
+</section>
+
+<section class="view" id="v-me">
+  <div style="text-align:center;margin-top:28px"><div class="av" id="av" style="width:84px;height:84px;font-size:32px;margin:0 auto 10px">T</div>
+    <h2 id="uname" style="margin:0">Profil</h2><p class="sub">Unvon: Bitikchi</p></div>
+  <div class="grid"><div class="card"><b>0</b><span>yechilgan test</span></div><div class="card"><b>-</b><span>o'rtacha natija</span></div>
+    <div class="card"><b>-</b><span>eng yaxshi natija</span></div><div class="card"><b>0</b><span>tangalarim</span></div></div>
+  <h2>Unvonlar</h2><p class="sub">Ball to'plab yuqori unvonga ko'tariling.</p><div class="card" id="titles"></div>
+  <button class="go" style="margin-top:14px" data-go="tests">Testlarni boshlash</button>
+</section>
+</main>
+
+<div id="toast" role="status"></div>
+<nav><div>
+<button data-go="home" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Bosh</button>
+<button data-go="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Testlar</button>
+<button data-go="season"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l4 2V6l4 2 4-2v5l4-2v12zM9 21v-4h6v4"/></svg>Mavsum</button>
+<button data-go="rating"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 0 3 3"/></svg>Reyting</button>
+<button data-go="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
+</div></nav>
+
+<script>
+// База данных вопросов (SAVOLLAR), содержащая все 45 вопросов
+window.SAVOLLAR = {
+  0: [ // Qadimgi davr (6-sinf)
+    { q: "Arxeologlar insoniyat tarixining boshlanishini qanday nom bilan atashadi?", o: ["Eneolit", "Paleolit", "Neolit", "Bronza"], a: 1 },
+    { q: "Teshiktosh g‘oridan (Boysun) topilgan neandertal bola suyak qoldig‘i qaysi davrga tegishli?", o: ["Ilk paleolit", "O‘rta paleolit (Mustye davri)", "So‘nggi paleolit", "Mezolit"], a: 1 },
+    { q: "Qadimgi Misrda ehromlar (piramidalar) asosan qaysi podshohlik davridan boshlab qurilmay qo‘yilgan?", o: ["Qadimgi podshohlik", "O‘rta podshohlik", "Yangi podshohlik", "So‘nggi podshohlik"], a: 1 },
+    { q: "Dunyo tarixidagi birinchi yozma qonunlar to‘plami qaysi davlatda yaratilgan?", o: ["Qadimgi Misr", "Bobil podsholigi", "Ossuriya", "Qadimgi Xitoy"], a: 1 },
+    { q: "Qadimgi Hindistonda momaqaldiroq va jang ma'budi kim deb e'tirof etilgan?", o: ["Brahma", "Indra", "Budda", "Ganesha"], a: 1 },
+    { q: "Qadimgi Xitoyda Chjou davlatida hukmdorlar o‘zlarini qanday atashgan?", o: ["Yer o‘g‘illari", "Osmon o‘g‘illari", "Quyosh vakillari", "Xudoning soyasi"], a: 1 },
+    { q: "Zardushtiylik e'tiqodiga ko‘ra, Ahriman (yovuzlik xudosi) bilan o‘tli chaqmoqlar otib kurashadigan ma'bud qaysi?", o: ["Axura Mazda", "Mitra", "Anaxita", "Tishtriya"], a: 0 },
+    { q: "Qadimgi Yunonistonda Marafon jangidan keyin g‘alaba xabarini Afinaga yugurib yetkazgan afsonaviy jangchi qancha masofani bosib o‘tgan?", o: ["21 km", "42 km", "50 km", "30 km"], a: 1 },
+    { q: "Qadimgi Xorazmning qadimiy Tuproqqal'a sharobxonasidan topilgan devoriy suratlar va yozuvlar qaysi xat namunasi hisoblanadi?", o: ["Mixxat", "Oromiy yozuvi asosidagi xorazmiy yozuvi", "Iyeroglif", "Finikiya alifbosi"], a: 1 },
+    { q: "Qang‘ davlatida dumaloq shakl nimaning ramzi bo‘lgan?", o: ["Quyosh va abadiylik", "Yer va hosildorlik", "Oy va suv", "Kuch-qudrat"], a: 0 },
+    { q: "Xitoy elchisi Chjan Szyan Farg‘ona (Davan) davlatidan o‘z yurtiga qanday nomdagi otlarni olib ketishga harakat qilgan?", o: ["Tulporlar", "Arg‘umoq otlar (\"Samoviy otlar\")", "Jangovar tuyalar", "Po‘lat otlar"], a: 1 },
+    { q: "Qadimgi Rimda xalq tribuni qaysi muhim huquqqa ega bo‘lgan?", o: ["Soliq yig‘ish", "\"Veto\" (taqiq qo‘yish) huquqi", "Urush e'lon qilish", "Yangi qonun yozish"], a: 1 },
+    { q: "Qadimgi Rimda shishaning sinishi yoki tosh parchalari yordamida devor yoki polga surat solish san'ati nima deb atalgan?", o: ["Freska", "Mozaika", "Relyef", "Skulptura"], a: 1 },
+    { q: "Qadimgi Rim tarixidagi eng yirik qullar qo‘zg‘oloniga kim boshchilik qilgan?", o: ["Yuliy Sezar", "Spartak", "Mark Krass", "Pompey"], a: 1 },
+    { q: "Xristian dinining muqaddas kitobi qanday nomlanadi?", o: ["Tavrot", "Injil (Bibliya)", "Qur'on", "Avesto"], a: 1 }
+  ],
+  1: [ // O'zbekiston tarixi (7-sinf)
+    { q: "O‘rta asrlar tarixi O‘zbekiston hududida asosan nechanchi asrlarni o‘z ichiga oladi?", o: ["IV–XIII asrlar", "V–XV asrlar", "VI–XVI asrlar", "III–XII asrlar"], a: 1 },
+    { q: "Ilk o‘rta asrlarda Xorazmda Afrig‘iylar sulolasiga qachon asos solingan?", o: ["305-yilda", "410-yilda", "520-yilda", "610-yilda"], a: 0 },
+    { q: "G‘arb tarixchilari \"oq xunnlar\" deb atagan elat qaysi?", o: ["Xioniylar", "Kidariylar", "Eftaliylar", "Qarluqlar"], a: 2 },
+    { q: "Turk xoqonligining asoschisi kim bo‘lgan va uning markazi qayer edi?", o: ["Istami yabg‘u — Buxoro", "Bumin xoqon — Oltoy", "To‘nyabg‘u — Suyob", "Tardu xoqon — Choch"], a: 1 },
+    { q: "G‘arbiy Turk xoqonligida hokimiyatning barcha bo‘g‘inlarida lavozim egalari qaysi unvonga ega bo‘lishi shart edi?", o: ["Shod", "O‘n o‘q el sardori", "Eltabar", "Tudun"], a: 1 },
+    { q: "751-yilda Talos vodiysida xitoyliklarga qarshi jang qilgan arab qo‘shiniga kim boshchilik qilgan?", o: ["Qutayba ibn Muslim", "Ziyod ibn Solih", "Abu Muslim", "Nasr ibn Sayyor"], a: 1 },
+    { q: "Muqanna boshchiligidagi \"Oq kiyimlilar\" qo‘zg‘oloni qaysi qal'ada qattiq qarshilik ko‘rsatgan?", o: ["Mug‘ qal'asi", "Som (Robiya) qal'asi", "Chilpiq", "Kampirtepa"], a: 1 },
+    { q: "Somoniylar davrida davlat boshqaruvi nechta devon orqali amalga oshirilgan?", o: ["5 ta", "8 ta", "10 ta", "12 ta"], a: 2 },
+    { q: "Sulton Mahmud G‘aznaviy Xorazmni qachon o‘z mulkiga qo‘shib olgan?", o: ["1004-yilda", "1017-yilda", "1025-yilda", "1040-yilda"], a: 1 },
+    { q: "Qoraxoniylar davriga oid, hozirgi Surxondaryo viloyatida joylashgan me'moriy yodgorlikni toping.", o: ["Ismoil Somoniy maqbarasi", "Jarqo‘rg‘on minorasi", "Qirqqiz qal'asi", "Kalyan minorasi"], a: 1 },
+    { q: "Saljuqiylar va g‘aznaviylar o‘rtasida 1040-yilda bo‘lib o‘tgan va g‘aznaviylar mag‘lubiyatga uchragan hal qiluvchi jang qayerda bo‘lgan?", o: ["Nishopur", "Dandanaqon", "G‘azna", "Marv"], a: 1 },
+    { q: "Anushteginiylar (Xorazmshohlar) sulolasining davlatini saltanat darajasiga ko‘targan eng qudratli hukmdor kim edi?", o: ["Qutbiddin Muhammad", "Otsiz", "Alouddin Muhammad", "Jaloliddin Manguberdi"], a: 2 },
+    { q: "Islom dinida hanafiy mazhabining asoschisi bo‘lgan buyuk alloma kim?", o: ["Imom Buxoriy", "Abu Hanifa (Imomi A'zam)", "Abu Mansur Moturudiy", "Burhoniddin Marg‘inoniy"], a: 1 },
+    { q: "\"Hadis ilmining sultoni\" degan sharafli unvonga sazovor bo‘lgan muhaddis kim?", o: ["At-Termiziy", "Imom Buxoriy", "Imom Muslim", "Al-Farg‘oniy"], a: 1 },
+    { q: "\"Al-Qonun fit-tib\" (Tib qonunlari) asarining muallifi kim?", o: ["Abu Rayhon Beruniy", "Abu Ali ibn Sino", "Mahmud Zamaxshariy", "Ismoil Jurjoniy"], a: 1 }
+  ],
+  2: [ // Temuriylar / Jahon tarixi shartnomalar
+    { q: "Brest sulhi qaysi davlatlar o‘rtasida imzolangan va natijasi qanday bo‘lgan?", o: ["Rossiya va Germaniya; Rossiya urushdan chiqdi", "Fransiya va Germaniya; Elzas va Lotaringiya berildi", "Buyuk Britaniya va Usmonliylar imperiyasi", "AQSH va Yaponiya"], a: 0 },
+    { q: "1919-yil 28-iyunda imzolangan Versal tinchlik shartnomasiga ko‘ra asosiy javobgarlik kimga yuklatilgan edi?", o: ["Avstriya-Vengriya", "Bolgariya", "Germaniya", "Usmonliylar imperiyasi"], a: 2 },
+    { q: "Vashington konferensiyasida (1921–1922) imzolangan «Beshlar shartnomasi»ning asosiy mohiyati nima edi?", o: ["Tinch okean orollarini taqsimlash", "Dengiz floti tonnajini cheklash", "Xitoyning suverenitetini tan olish", "Yadro qurolini taqiqlash"], a: 1 },
+    { q: "1922-yil aprel oyida imzolangan Rapallo shartnomasini qaysi ikki davlat imzolagan?", o: ["Buyuk Britaniya va Fransiya", "Germaniya va Sovet Rossiyasi", "AQSH va Yaponiya", "Italiya va Fransiya"], a: 1 },
+    { q: "1925-yildagi Lokarno shartnomasi yana qanday nom bilan ataladi?", o: ["Reyn kafolat pakti", "Savedro Lamas pakti", "Antikomintern pakti", "Bag‘dod pakti"], a: 0 },
+    { q: "1928-yilgi Brian-Kellog paktining asosiy mazmuni nima edi?", o: ["Dengiz flotini qisqartirish", "Urushdan siyosat quroli sifatida voz kechish", "Savdo bojlarini bekor qilish", "O‘zaro yordam ko‘rsatish"], a: 1 },
+    { q: "1936-yil iyul oyida imzolangan Montryo shartnomasiga ko‘ra qaysi bo‘g‘ozlar ustidan nazorat Turkiyaga o‘tdi?", o: ["Bosfor va Dardanel", "Suvaysh kanali", "Gibraltar", "Bering bo‘g‘ozi"], a: 0 },
+    { q: "Myunxen shartnomasiga (1938-yil) ko‘ra Chexoslovakiyaning qaysi hududi Germaniyaga berildi?", o: ["Praga shahri", "Sudet viloyati", "Moraviya", "Slovakiya"], a: 1 },
+    { q: "1936-yil noyabrda imzolangan Antikomintern paktini dastlab qaysi davlatlar imzolagan edi?", o: ["Germaniya va Italiya", "Germaniya va Yaponiya", "Italiya va Yaponiya", "SSSR va Fransiya"], a: 1 },
+    { q: "1941-yil avgust oyida imzolangan «Atlantik nizom» kimlar tomonidan imzolangan edi?", o: ["Stalin va Ruzvelt", "Cherchill va Ruzvelt", "Stalin va Cherchill", "de Goll va Ruzvelt"], a: 1 },
+    { q: "1949-yil 4-aprelda Vashingtonda tuzilgan NATO tashkilotiga dastlab nechta davlat asos solgan?", o: ["8 ta", "10 ta", "12 ta", "15 ta"], a: 2 },
+    { q: "Varshava shartnomasi tashkiloti qachon tuzilgan va qachon tugatilgan?", o: ["1949-yil — 1989-yil", "1955-yil 14-may — 1991-yil 1-iyul", "1957-yil — 1993-yil", "1950-yil — 1990-yil"], a: 1 },
+    { q: "1954-yilgi Jeneva bitimiga ko‘ra Vetnam qaysi chiziq bo‘yicha bo‘lingan edi?", o: ["17-parallel", "38-parallel", "49-parallel", "21-parallel"], a: 0 },
+    { q: "1991-yil 8-dekabrda imzolangan Belovej bitimi nufuzli qaysi davlatning tugatilganini e'lon qildi?", o: ["Yugoslaviya", "SSSR", "Chexoslovakiya", "Germaniya demokratik respublikasi"], a: 1 },
+    { q: "1975-yil 1-avgustda imzolangan Helsinki Yakunlovchi aktida nechta davlat ishtirok etgan?", o: ["25 ta", "30 ta", "35 ta", "50 ta"], a: 2 }
+  ]
+};
+
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#0A1230");tg.setBackgroundColor("#0A1230")}catch(e){}}
+const $=id=>document.getElementById(id), gl=n=>`<svg class="gl" viewBox="0 0 24 24"><use href="#g-${n}"/></svg>`;
+const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
+if(u){$("hello").textContent="Salom, "+u.first_name+"!";$("uname").textContent=u.first_name;$("av").textContent=u.first_name.charAt(0).toUpperCase()}
+
+/* kirish ekrani */
+let seen=false;try{seen=sessionStorage.getItem("s")}catch(e){}
+const sp=$("splash");function hide(){sp.classList.add("out");try{sessionStorage.setItem("s","1")}catch(e){}}
+if(seen){sp.style.display="none"}else{sp.onclick=hide;setTimeout(hide,2600)}
+
+/* kun savoli */
+["1245","1336","1370","1405"].forEach(y=>{const b=document.createElement("button");b.className="opt";b.textContent=y;
+b.onclick=()=>{document.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(o.textContent==="1336")o.classList.add("ok")});
+if(y==="1336")toast("To'g'ri! Amir Temur 1336 yilda tug'ilgan.");else{b.classList.add("no");toast("Noto'g'ri. To'g'ri javob: 1336.")}};$("opts").append(b)});
+
+/* karvon */
+const streak=0;$("road").innerHTML=["Xiva","Buxoro","Samarqand","Toshkent","Farg'ona"].map((c,i)=>`<div class="stop ${i===Math.min(streak,4)?"here":""}">${i===Math.min(streak,4)?'<span class="cam">🐪</span>':""}<i></i>${c}</div>`).join("");
+
+/* Davrlar */
+const eras=[
+  {title:"Qadimgi davr", sub:"Miloddan avvalgi davr - VII asr", icon:"flame", c1:"#8A3F10", c2:"#C27A2A", key:0},
+  {title:"Arab xalifaligi va islom madaniyati", sub:"VIII-XII asrlar", icon:"minaret", c1:"#0F5E63", c2:"#1B9AA0", key:1},
+  {title:"Temuriylar davri va Jahon tarixi", sub:"XIV-XV asrlar", icon:"dome", c1:"#1E3F9E", c2:"#3560C8", key:2},
+  {title:"Xonliklar davri", sub:"XVI-XIX asrlar", icon:"fort", c1:"#1C5B3E", c2:"#2E8B5F", key:null},
+  {title:"Mustamlaka va sovet davri", sub:"1860-1991 yillar", icon:"cotton", c1:"#5A1F1F", c2:"#9A3434", key:null},
+  {title:"Mustaqillik yillari", sub:"1991 yildan hozirgacha", icon:"sun", c1:"#1D6FB8", c2:"#5AB2E8", key:null}
+];
+
+function renderEras(){
+  $("eras").innerHTML=eras.map(e=>{
+    let count=0;
+    if(e.key!==null && window.SAVOLLAR && window.SAVOLLAR[e.key]){
+      count=window.SAVOLLAR[e.key].length;
+    }
+    let attr = e.key!==null ? `data-era="${e.key}"` : `data-soon="${e.title}"`;
+    return `<button class="era" style="--a:${e.c1};--b:${e.c2}" ${attr}>
+      ${gl(e.icon)}<strong>${e.title}</strong><small>${e.sub}</small>
+      <div class="bar"><i style="width:0%"></i></div><em>0 / ${count} test</em>
+    </button>`;
+  }).join("");
+}
+renderEras();
+
+/* Test jarayoni oynasi */
+let activeQuestions=[];
+let currentQIndex=0;
+let score=0;
+
+function startTest(eraKey){
+  if(!window.SAVOLLAR || !window.SAVOLLAR[eraKey] || window.SAVOLLAR[eraKey].length===0){
+    toast("Bu davr uchun hali savollar kiritilmagan.");
+    return;
+  }
+  activeQuestions=window.SAVOLLAR[eraKey];
+  currentQIndex=0;
+  score=0;
+  showQuestionModal();
+}
+
+function showQuestionModal(){
+  if(currentQIndex>=activeQuestions.length){
+    toast(`Test yakunlandi! Natijangiz: ${score}/${activeQuestions.length}`);
+    document.getElementById("q-modal")?.remove();
+    return;
+  }
+  
+  let qData=activeQuestions[currentQIndex];
+  let existingModal=document.getElementById("q-modal");
+  if(existingModal) existingModal.remove();
+
+  let modal=document.createElement("div");
+  modal.id="q-modal";
+  modal.style.cssText="position:fixed;inset:0;background:var(--night);z-index:100;padding:20px;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;";
+  
+  let optsHtml=qData.o.map((opt,i)=>`<button class="opt-btn" data-opt="${i}" style="width:100%;padding:14px;margin:6px 0;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;text-align:left;color:var(--ink);">${opt}</button>`).join("");
+
+  modal.innerHTML=`
+    <div style="max-width:500px;margin:0 auto;width:100%;">
+      <p class="sub">Savol ${currentQIndex+1} / ${activeQuestions.length}</p>
+      <h3 style="margin:12px 0 20px;font-size:18px;line-height:1.4">${qData.q}</h3>
+      <div id="quiz-opts">${optsHtml}</div>
+      <button id="close-quiz" style="margin-top:20px;padding:12px;background:rgba(255,255,255,.1);border-radius:10px;width:100%;color:var(--ink);text-align:center;">Testdan chiqish</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelectorAll(".opt-btn").forEach(btn=>{
+    btn.onclick=(e)=>{
+      modal.querySelectorAll(".opt-btn").forEach(b=>b.disabled=true);
+      let selected=parseInt(btn.getAttribute("data-opt"));
+      if(selected===qData.a){
+        btn.style.background="#14654F";
+        btn.style.borderColor="#2FD0A0";
+        score++;
+        toast("To'g'ri javob!");
+      } else {
+        btn.style.background="#6C2430";
+        btn.style.borderColor="#E0586E";
+        toast("Noto'g'ri!");
+      }
+      setTimeout(()=>{
+        currentQIndex++;
+        showQuestionModal();
+      }, 1600);
+    };
+  });
+
+  modal.querySelector("#close-quiz").onclick=()=>modal.remove();
+}
+
+/* Testlar va boshqa bo'limlar */
+const tests=[["Qadimgi davr, 1-test","Davrlar",15,15,"4.2k",0],["O'zbekiston tarixi, 1-test","Davrlar",15,15,"3.1k",0],
+["Jahon tarixi va shartnomalar","Davrlar",15,15,"3.5k",0],["Xonliklar davri, 1-test","Davrlar",15,15,"2.2k",0],
+["Sertifikat sinov testi","Sertifikat",50,60,"1.6k",1]];
+let cat="Barchasi",term="";
+function drawTests(){$("tests").innerHTML=tests.filter(t=>(cat==="Barchasi"||t[1]===cat)&&t[0].toLowerCase().includes(term)).map(t=>
+`<div class="card test"><b>${t[0]}</b>${t[5]?'<span class="vip">A\'zolar</span>':""}<p class="meta">${t[2]} savol &nbsp;·&nbsp; ${t[3]} daqiqa &nbsp;·&nbsp; ${t[4]} kishi</p><button class="go ${t[5]?"lock":""}" ${t[0].includes("Qadimgi")?'data-era="0"':t[0].includes("O'zbekiston")?'data-era="1"':t[0].includes("Jahon")?'data-era="2"':`data-soon="${t[0]}"`}>${t[5]?"Ochish uchun a'zo bo'ling":"Ishlash"}</button></div>`).join("")||'<p class="note">Hech narsa topilmadi.</p>'}
+$("chips").innerHTML=["Barchasi","Davrlar","Sertifikat"].map((c,i)=>`<button class="chip ${i?"":"on"}" data-cat="${c}">${c}</button>`).join("");
+$("q").oninput=e=>{term=e.target.value.toLowerCase();drawTests()};drawTests();
+
+$("miles").innerHTML=[["Ulug'bek madrasasi","100 ball"],["Sherdor madrasasi","300 ball"],["Tillakori madrasasi","600 ball"]].map(m=>`<div class="mile off">${gl("dome")}<div><b>${m[0]}</b><p class="sub">${m[1]}</p></div></div>`).join("");
+const R=[["Aziz",940],["Madina",905],["Jasur",870],["Dilnoza",820],["Sardor",790]];
+$("podium").innerHTML=[1,0,2].map(i=>`<div class="pod"><div class="av">${R[i][0][0]}</div><b>${R[i][0]}</b><small>${R[i][1]} ball</small><div class="st" style="height:${[110,80,60][i]}px">${i+1}</div></div>`).join("");
+$("ranks").innerHTML=R.slice(3).map((r,i)=>`<div class="rk"><b>${i+4}</b><span>${r[0]}</span><b>${r[1]}</b></div>`).join("");
+$("titles").innerHTML=[["Bitikchi","0 ball",1],["Mirzo","200 ball"],["Mudarris","600 ball"],["Alloma","1200 ball"]].map(t=>`<div class="mile ${t[2]?"":"off"}">${gl("minaret")}<div><b>${t[0]}</b><p class="sub">${t[1]}</p></div></div>`).join("");
+
+let tm;function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>el.classList.remove("show"),2400)}
+
+document.addEventListener("click",e=>{
+const eraBtn=e.target.closest("[data-era]");if(eraBtn){startTest(parseInt(eraBtn.dataset.era));return;}
+const s=e.target.closest("[data-soon]");if(s){toast(s.dataset.soon+" bo'limi tez orada qo'shiladi.");return}
+const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));drawTests();return}
+const g=e.target.closest("[data-go]");if(g){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+g.dataset.go).classList.add("on");
+document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===g.dataset.go));window.scrollTo(0,0)}});
+</script>
+</body>
+</html>
