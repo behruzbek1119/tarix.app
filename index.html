@@ -168,6 +168,9 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 <button data-go="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
 </div></nav>
 
+<!-- Savollar bazasi ulanishi -->
+<script src="savollar.js"></script>
+
 <script>
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#0A1230");tg.setBackgroundColor("#0A1230")}catch(e){}}
@@ -188,16 +191,87 @@ if(y==="1336")toast("To'g'ri! Amir Temur 1336 yilda tug'ilgan.");else{b.classLis
 /* karvon */
 const streak=0;$("road").innerHTML=["Xiva","Buxoro","Samarqand","Toshkent","Farg'ona"].map((c,i)=>`<div class="stop ${i===Math.min(streak,4)?"here":""}">${i===Math.min(streak,4)?'<span class="cam">🐪</span>':""}<i></i>${c}</div>`).join("");
 
-/* davrlar */
-const eras=[["Qadimgi davr","Miloddan avvalgi davr - VII asr","flame","#8A3F10","#C27A2A",12],
-["Arab xalifaligi va islom madaniyati","VIII-XII asrlar","minaret","#0F5E63","#1B9AA0",12],
-["Temuriylar davri","XIV-XV asrlar","dome","#1E3F9E","#3560C8",15],
-["Xonliklar davri","XVI-XIX asrlar","fort","#1C5B3E","#2E8B5F",12],
-["Mustamlaka va sovet davri","1860-1991 yillar","cotton","#5A1F1F","#9A3434",15],
-["Mustaqillik yillari","1991 yildan hozirgacha","sun","#1D6FB8","#5AB2E8",15]];
-$("eras").innerHTML=eras.map(e=>`<button class="era" style="--a:${e[3]};--b:${e[4]}" data-soon="${e[0]}">${gl(e[2])}<strong>${e[0]}</strong><small>${e[1]}</small><div class="bar"><i style="width:0%"></i></div><em>0 / ${e[5]} test</em></button>`).join("");
+/* davrlar (savollari borlari ochiladigan qilindi) */
+const eras=[
+["Qadimgi davr","Miloddan avvalgi davr - VII asr","flame","#8A3F10","#C27A2A",5, 0],
+["Arab xalifaligi va islom madaniyati","VIII-XII asrlar","minaret","#0F5E63","#1B9AA0",12, null],
+["Temuriylar davri","XIV-XV asrlar","dome","#1E3F9E","#3560C8",5, 2],
+["Xonliklar davri","XVI-XIX asrlar","fort","#1C5B3E","#2E8B5F",12, null],
+["Mustamlaka va sovet davri","1860-1991 yillar","cotton","#5A1F1F","#9A3434",15, null],
+["Mustaqillik yillari","1991 yildan hozirgacha","sun","#1D6FB8","#5AB2E8",15, null]
+];
 
-/* testlar */
+$("eras").innerHTML=eras.map((e,idx)=>`
+<button class="era" style="--a:${e[3]};--b:${e[4]}" ${e[5]!==null?`data-era="${e[5]}"`:`data-soon="${e[0]}"`}>
+${gl(e[2])}<strong>${e[0]}</strong><small>${e[1]}</small>
+<div class="bar"><i style="width:0%"></i></div><em>0 / ${e[5]!==null && window.SAVOLLAR && window.SAVOLLAR[e[5]] ? window.SAVOLLAR[e[5]].length : e[4]} test</em></button>`
+).join("");
+
+/* Test oynasi va logikasi */
+let activeQuestions=[];
+let currentQIndex=0;
+let score=0;
+
+function startTest(eraIndex){
+  if(!window.SAVOLLAR || !window.SAVOLLAR[eraIndex]){
+    toast("Bu davr uchun hali savollar kiritilmagan.");
+    return;
+  }
+  activeQuestions=window.SAVOLLAR[eraIndex];
+  currentQIndex=0;
+  score=0;
+  showQuestionModal();
+}
+
+function showQuestionModal(){
+  if(currentQIndex>=activeQuestions.length){
+    toast(`Test yakunlandi! Natijangiz: ${score}/${activeQuestions.length}`);
+    document.getElementById("q-modal")?.remove();
+    return;
+  }
+  
+  let qData=activeQuestions[currentQIndex];
+  let existingModal=document.getElementById("q-modal");
+  if(existingModal) existingModal.remove();
+
+  let modal=document.createElement("div");
+  modal.id="q-modal";
+  modal.style.cssText="position:fixed;inset:0;background:var(--night);z-index:100;padding:20px;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;";
+  
+  let optsHtml=qData.o.map((opt,i)=>`<button class="opt-btn" data-opt="${i}" style="width:100%;padding:12px;margin:6px 0;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;text-align:left;color:var(--ink);">${opt}</button>`).join("");
+
+  modal.innerHTML=`
+    <div style="max-width:500px;margin:0 auto;width:100%;">
+      <p class="sub">Savol ${currentQIndex+1} / ${activeQuestions.length}</p>
+      <h3 style="margin:10px 0 20px;font-size:18px;">${qData.q}</h3>
+      <div id="quiz-opts">${optsHtml}</div>
+      <button id="close-quiz" style="margin-top:20px;padding:10px;background:rgba(255,255,255,.1);border-radius:10px;width:100%;color:var(--ink);">Chiqish</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelectorAll(".opt-btn").forEach(btn=>{
+    btn.onclick=(e)=>{
+      let selected=parseInt(e.target.getAttribute("data-opt"));
+      if(selected===qData.a){
+        e.target.style.background="#14654F";
+        score++;
+        toast("To'g'ri!");
+      } else {
+        e.target.style.background="#6C2430";
+        toast("Noto'g'ri! " + qData.izoh);
+      }
+      setTimeout(()=>{
+        currentQIndex++;
+        showQuestionModal();
+      }, 1500);
+    };
+  });
+
+  modal.querySelector("#close-quiz").onclick=()=>modal.remove();
+}
+
+/* testlar ro'yxati */
 const tests=[["Qadimgi davr, 1-test","Davrlar",15,23,"4.2k",0],["Arab xalifaligi, 1-test","Davrlar",15,23,"3.1k",0],
 ["Temuriylar davri, 1-test","Davrlar",15,23,"3.5k",1],["Xonliklar davri, 1-test","Davrlar",15,23,"2.2k",0],
 ["Sertifikat sinov testi","Sertifikat",50,60,"1.6k",1]];
@@ -215,15 +289,13 @@ $("ranks").innerHTML=R.slice(3).map((r,i)=>`<div class="rk"><b>${i+4}</b><span>$
 $("titles").innerHTML=[["Bitikchi","0 ball",1],["Mirzo","200 ball"],["Mudarris","600 ball"],["Alloma","1200 ball"]].map(t=>`<div class="mile ${t[2]?"":"off"}">${gl("minaret")}<div><b>${t[0]}</b><p class="sub">${t[1]}</p></div></div>`).join("");
 
 let tm;function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>el.classList.remove("show"),2400)}
+
 document.addEventListener("click",e=>{
+const eraBtn=e.target.closest("[data-era]");if(eraBtn){startTest(eraBtn.dataset.era);return;}
 const s=e.target.closest("[data-soon]");if(s){toast(s.dataset.soon+" bo'limi tez orada qo'shiladi.");return}
 const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));drawTests();return}
 const g=e.target.closest("[data-go]");if(g){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+g.dataset.go).classList.add("on");
 document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===g.dataset.go));window.scrollTo(0,0)}});
 </script>
-
-<!-- Savollar bazasi shu yerda ulandi -->
-<script src="savollar.js"></script>
-
 </body>
 </html>
