@@ -221,5 +221,9 @@ const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;document.querySel
 const g=e.target.closest("[data-go]");if(g){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+g.dataset.go).classList.add("on");
 document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===g.dataset.go));window.scrollTo(0,0)}});
 </script>
+
+<!-- Savollar bazasi shu yerda ulandi -->
+<script src="savollar.js"></script>
+
 </body>
 </html>
