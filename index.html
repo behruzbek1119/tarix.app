@@ -120,7 +120,7 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 <section class="view on" id="v-home">
   <div class="hero"><span class="moon"></span>
     <h1 id="hello">Salom!</h1><p>Bugun tarixdan nimani o'rganamiz?</p>
-    <span class="coins" id="coins">0 tanga</span>
+    <span class="coins" id="coins">0 ball</span>
     <svg class="sk" viewBox="0 0 390 150" preserveAspectRatio="xMidYMax slice"><use href="#sky"/></svg></div>
   <div class="card q"><p class="sub">Kun savoli</p><h3>Amir Temur qaysi yilda tug'ilgan?</h3><div class="opts" id="opts"></div></div>
   <div class="card"><h3 style="font-size:17px">Ipak yo'li karvoni</h3>
@@ -136,7 +136,7 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 
 <section class="view" id="v-season">
   <h2 style="margin-top:22px">Registon qurilishi</h2><p class="sub">Joriy mavsum. Ball to'plang, madrasalarni quring.</p>
-  <div class="card"><div class="bar" style="background:rgba(255,255,255,.12)"><i style="width:0%"></i></div><p class="sub">0 ball to'plandi</p>
+  <div class="card"><div class="bar" style="background:rgba(255,255,255,.12)"><i id="sbar" style="width:0%"></i></div><p class="sub" id="stxt">0 ball to'plandi</p>
     <div id="miles"></div></div>
   <div class="card"><b>Mavsum testlari a'zolar uchun</b><p class="sub" style="margin-top:4px">Qatnashish uchun a'zolik kerak. Sovrinlar haqida ma'lumot tez orada.</p>
     <button class="go" style="margin-top:12px" data-soon="Mavsum">Qatnashish</button></div>
@@ -145,14 +145,14 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 <section class="view" id="v-rating">
   <h2 style="margin-top:22px">Reyting</h2><p class="sub">Har testning birinchi urinishi bo'yicha jami ball.</p>
   <div class="podium" id="podium"></div><div class="card" id="ranks"></div>
-  <p class="note">Ro'yxat hozircha namuna.</p>
+  
 </section>
 
 <section class="view" id="v-me">
   <div style="text-align:center;margin-top:28px"><div class="av" id="av" style="width:84px;height:84px;font-size:32px;margin:0 auto 10px">T</div>
-    <h2 id="uname" style="margin:0">Profil</h2><p class="sub">Unvon: Bitikchi</p></div>
-  <div class="grid"><div class="card"><b>0</b><span>yechilgan test</span></div><div class="card"><b>-</b><span>o'rtacha natija</span></div>
-    <div class="card"><b>-</b><span>eng yaxshi natija</span></div><div class="card"><b>0</b><span>tangalarim</span></div></div>
+    <h2 id="uname" style="margin:0">Profil</h2><p class="sub" id="ttl">Unvon: Bitikchi</p></div>
+  <div class="grid"><div class="card"><b id="pf-t">0</b><span>yechilgan test</span></div><div class="card"><b id="pf-a">-</b><span>o'rtacha natija</span></div>
+    <div class="card"><b id="pf-b">-</b><span>eng yaxshi natija</span></div><div class="card"><b id="pf-p">0</b><span>to'plangan ball</span></div></div>
   <h2>Unvonlar</h2><p class="sub">Ball to'plab yuqori unvonga ko'tariling.</p><div class="card" id="titles"></div>
   <button class="go" style="margin-top:14px" data-go="tests">Testlarni boshlash</button>
 </section>
@@ -296,7 +296,47 @@ b.onclick=()=>{document.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(
 if(y==="1336")toast("To'g'ri! Amir Temur 1336 yilda tug'ilgan.");else{b.classList.add("no");toast("Noto'g'ri. To'g'ri javob: 1336.")}};$("opts").append(b)});
 
 /* karvon */
-const streak=0;$("road").innerHTML=["Xiva","Buxoro","Samarqand","Toshkent","Farg'ona"].map((c,i)=>`<div class="stop ${i===Math.min(streak,4)?"here":""}">${i===Math.min(streak,4)?'<span class="cam">🐪</span>':""}<i></i>${c}</div>`).join("");
+function drawRoad(){const streak=curStreak();$("road").innerHTML=["Xiva","Buxoro","Samarqand","Toshkent","Farg'ona"].map((c,i)=>`<div class="stop ${i===Math.min(streak,4)?"here":""}">${i===Math.min(streak,4)?'<span class="cam">🐪</span>':""}<i></i>${c}</div>`).join("")}
+
+/* Natijalarni saqlash: Telegram bulutli xotirasi, bo'lmasa brauzer xotirasi */
+const KEY="tarix_v1";
+let P={first:{},best:{},tries:0,sumPct:0,pts:0,last:"",streak:0};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cloud=()=>{try{return tg&&tg.CloudStorage&&tg.isVersionAtLeast&&tg.isVersionAtLeast("6.9")?tg.CloudStorage:null}catch(e){return null}};
+const store={
+  get(cb){const c=cloud();if(c){c.getItem(KEY,(e,v)=>cb(e?null:v));return}try{cb(localStorage.getItem(KEY))}catch(e){cb(null)}},
+  set(v){const c=cloud();if(c){c.setItem(KEY,v);return}try{localStorage.setItem(KEY,v)}catch(e){}}
+};
+const save=()=>store.set(JSON.stringify(P));
+const dayStr=d=>{try{return d.toLocaleDateString("sv-SE")}catch(e){return d.toISOString().slice(0,10)}};
+const yest=()=>dayStr(new Date(Date.now()-864e5));
+function curStreak(){return(P.last===dayStr(new Date())||P.last===yest())?P.streak:0}
+function touchStreak(){const t=dayStr(new Date());if(P.last===t)return;P.streak=(P.last===yest())?P.streak+1:1;P.last=t}
+const TITLES=[["Bitikchi",0],["Mirzo",100],["Mudarris",250],["Alloma",400]];
+const MILES=[["Ulug'bek madrasasi",100],["Sherdor madrasasi",250],["Tillakori madrasasi",400]];
+const curTitle=()=>TITLES.filter(t=>P.pts>=t[1]).pop()[0];
+function record(era,sc,tot){
+  let gained=0;
+  if(P.first[era]===undefined){P.first[era]=sc;gained=sc*10;P.pts+=gained}
+  const b=P.best[era];if(!b||sc/tot>b[0]/b[1])P.best[era]=[sc,tot];
+  P.tries++;P.sumPct+=Math.round(sc/tot*100);touchStreak();save();refresh();return gained;
+}
+function drawProfile(){
+  $("pf-t").textContent=P.tries;
+  $("pf-a").textContent=P.tries?Math.round(P.sumPct/P.tries)+"%":"-";
+  const bs=Object.values(P.best);
+  $("pf-b").textContent=bs.length?Math.max(...bs.map(b=>Math.round(b[0]/b[1]*100)))+"%":"-";
+  $("pf-p").textContent=P.pts;$("ttl").textContent="Unvon: "+curTitle();
+}
+function drawTitles(){$("titles").innerHTML=TITLES.map(t=>`<div class="mile ${P.pts>=t[1]?"":"off"}">${gl("minaret")}<div><b>${t[0]}</b><p class="sub">${t[1]} ball</p></div></div>`).join("")}
+function drawMiles(){
+  $("sbar").style.width=Math.min(100,P.pts/MILES[2][1]*100)+"%";$("stxt").textContent=P.pts+" ball to'plandi";
+}
+function drawRating(){
+  const nm=u?esc(u.first_name):"Siz";$("podium").innerHTML="";
+  $("ranks").innerHTML=`<div class="rk"><b>-</b><span>${nm}</span><b>${P.pts}</b></div><p class="note" style="margin-top:6px">Bu sizning shaxsiy natijangiz. Hamma foydalanuvchilar reytingi umumiy server ulangach chiqadi.</p>`;
+}
+function refresh(){$("coins").textContent=P.pts+" ball";drawRoad();renderEras();drawProfile();drawTitles();drawMiles();drawRating()}
 
 /* Davrlar */
 const eras=[
@@ -314,10 +354,11 @@ function renderEras(){
     if(e.key!==null && window.SAVOLLAR && window.SAVOLLAR[e.key]){
       count=window.SAVOLLAR[e.key].length;
     }
+    const b=e.key!==null?P.best[e.key]:null;const bp=b?Math.round(b[0]/b[1]*100):0;const bt=e.key===null?"Tez orada":b?"Eng yaxshi: "+b[0]+" / "+b[1]:count+" savol";
     let attr = e.key!==null ? `data-era="${e.key}"` : `data-soon="${e.title}"`;
     return `<button class="era" style="--a:${e.c1};--b:${e.c2}" ${attr}>
       ${gl(e.icon)}<strong>${e.title}</strong><small>${e.sub}</small>
-      <div class="bar"><i style="width:0%"></i></div><em>0 / ${count} test</em>
+      <div class="bar"><i style="width:${bp}%"></i></div><em>${bt}</em>
     </button>`;
   }).join("");
 }
@@ -408,6 +449,8 @@ function showResults(){
   const pct=Math.round(score/total*100);
   const all=window.SAVOLLAR[activeEra];
   const izoh=(window.IZOH&&window.IZOH[activeEra])||[];
+  const full=activeIdx.length===all.length;let gained=0;if(full){gained=record(activeEra,score,total)}
+  const gainedHtml=full?(gained?`<p style="margin-top:8px;color:var(--gold)">+${gained} ball (birinchi urinish)</p>`:`<p class="sub" style="margin-top:8px">Bu test avval ishlangan. Ball faqat birinchi urinish uchun beriladi.</p>`):"";
   const emoji = pct>=80 ? "🏆" : pct>=50 ? "👍" : "📚";
   const msg = pct>=80 ? "Ajoyib natija!" : pct>=50 ? "Yomon emas, lekin yana mashq qiling." : "Kitobni yana bir bor o'qib chiqing.";
 
@@ -433,7 +476,7 @@ function showResults(){
         <div style="font-size:48px">${emoji}</div>
         <h2 style="margin:6px 0 0">${score} / ${total}</h2>
         <p class="sub">To'g'ri javoblar: ${pct}% &nbsp;·&nbsp; Xato: ${wrongList.length} ta</p>
-        <p style="margin-top:6px">${msg}</p>
+        <p style="margin-top:6px">${msg}</p>${gainedHtml}
       </div>
       ${wrongList.length ? `<h2>Xatolar tahlili</h2><p class="sub">Xato qilgan savollaringiz va kitobdagi ma'lumot:</p>${wrongHtml}` : `<div class="card" style="text-align:center"><b>Barcha javoblar to'g'ri!</b><p class="sub">Xato qilingan savol yo'q.</p></div>`}
       <div style="display:grid;gap:10px;margin-top:20px">
@@ -460,11 +503,6 @@ function drawTests(){$("tests").innerHTML=tests.filter(t=>(cat==="Barchasi"||t[1
 $("chips").innerHTML=["Barchasi","Davrlar","Sertifikat"].map((c,i)=>`<button class="chip ${i?"":"on"}" data-cat="${c}">${c}</button>`).join("");
 $("q").oninput=e=>{term=e.target.value.toLowerCase();drawTests()};drawTests();
 
-$("miles").innerHTML=[["Ulug'bek madrasasi","100 ball"],["Sherdor madrasasi","300 ball"],["Tillakori madrasasi","600 ball"]].map(m=>`<div class="mile off">${gl("dome")}<div><b>${m[0]}</b><p class="sub">${m[1]}</p></div></div>`).join("");
-const R=[["Aziz",940],["Madina",905],["Jasur",870],["Dilnoza",820],["Sardor",790]];
-$("podium").innerHTML=[1,0,2].map(i=>`<div class="pod"><div class="av">${R[i][0][0]}</div><b>${R[i][0]}</b><small>${R[i][1]} ball</small><div class="st" style="height:${[110,80,60][i]}px">${i+1}</div></div>`).join("");
-$("ranks").innerHTML=R.slice(3).map((r,i)=>`<div class="rk"><b>${i+4}</b><span>${r[0]}</span><b>${r[1]}</b></div>`).join("");
-$("titles").innerHTML=[["Bitikchi","0 ball",1],["Mirzo","200 ball"],["Mudarris","600 ball"],["Alloma","1200 ball"]].map(t=>`<div class="mile ${t[2]?"":"off"}">${gl("minaret")}<div><b>${t[0]}</b><p class="sub">${t[1]}</p></div></div>`).join("");
 
 let tm;function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>el.classList.remove("show"),2400)}
 
@@ -474,6 +512,7 @@ const s=e.target.closest("[data-soon]");if(s){toast(s.dataset.soon+" bo'limi tez
 const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));drawTests();return}
 const g=e.target.closest("[data-go]");if(g){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+g.dataset.go).classList.add("on");
 document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===g.dataset.go));window.scrollTo(0,0)}});
+store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}refresh()});
 </script>
 </body>
 </html>
