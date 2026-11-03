@@ -90,6 +90,26 @@ nav svg{width:22px;height:22px}nav [aria-current]{color:var(--gold);font-weight:
 background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.class-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.class-btn{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.class-btn .num{font:700 28px var(--serif);color:var(--gold)}.class-btn small{color:var(--mute);font-size:12px;text-align:right}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:14px;margin:18px 0 6px;font-weight:600}
+.stp{display:flex;gap:12px;align-items:center;width:100%;padding:14px;margin-top:10px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.stp .n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:700 16px var(--serif);border:2px solid var(--gold);color:var(--gold)}
+.stp.done .n{background:var(--gold);color:var(--night)}.stp.lock{opacity:.55}
+.stp .t{flex:1}.stp .t b{display:block}.stp .t span{font-size:13px;color:var(--mute)}
+.row-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:8px}
+.row-card small{color:var(--mute);white-space:nowrap}
+.gp{margin-top:12px;line-height:1.6}
+.qa-card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-top:10px;overflow:hidden}
+.qa-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer}
+.qa-q{flex:1;font-weight:600;line-height:1.4}.qa-eye{flex:none;color:var(--gold);transition:transform .25s}
+.qa-card.open .qa-eye{transform:rotate(180deg)}
+.qa-body{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;background:rgba(34,183,176,.07);color:var(--tile);font-size:14px;line-height:1.5}
+.qa-card.open .qa-body{max-height:900px;padding:12px 16px;border-top:1px solid var(--line)}
+nav button{font-size:12px}
+.pc{margin-top:10px}.pc h3{font-size:17px}.pc .m{color:var(--gold);font-size:13px;margin:2px 0 8px}.pc p{line-height:1.55;font-size:15px}.pc small{display:block;margin-top:8px;color:var(--mute)}
+.tw{overflow-x:auto;margin-top:10px}.tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl th,.tbl td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}.tbl th{background:rgba(217,174,86,.12);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -125,21 +145,34 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
   <div class="card q"><p class="sub">Kun savoli</p><h3>Amir Temur qaysi yilda tug'ilgan?</h3><div class="opts" id="opts"></div></div>
   <div class="card"><h3 style="font-size:17px">Ipak yo'li karvoni</h3>
     <p class="sub">Har kuni mashq qilsangiz, karvon bir manzil oldinga yuradi.</p><div class="road" id="road"></div></div>
-  <h2>Davrlar</h2><p class="sub">Davrni tanlang va testlarni boshlang.</p><div id="eras"></div>
+  <h2>Davr</h2><p class="sub">6-sinf bo'limini tanlang.</p><div id="eras"></div>
 </section>
+
 
 <section class="view" id="v-tests">
-  <h2 style="margin-top:22px">Testlar</h2><p class="sub">Davr bo'yicha tanlang yoki nomidan qidiring.</p>
-  <input class="search" id="q" placeholder="Test nomi bo'yicha qidirish" aria-label="Qidirish">
-  <div class="chips" id="chips"></div><div id="tests"></div>
+  <h2 style="margin-top:22px">Testlar</h2><p class="sub">Sinfni tanlang. Har sinfda 4 ta bosqich bor.</p>
+  <div class="class-grid" id="cls-grid"></div>
 </section>
 
-<section class="view" id="v-season">
-  <h2 style="margin-top:22px">Registon qurilishi</h2><p class="sub">Joriy mavsum. Ball to'plang, madrasalarni quring.</p>
-  <div class="card"><div class="bar" style="background:rgba(255,255,255,.12)"><i id="sbar" style="width:0%"></i></div><p class="sub" id="stxt">0 ball to'plandi</p>
-    <div id="miles"></div></div>
-  <div class="card"><b>Mavsum testlari a'zolar uchun</b><p class="sub" style="margin-top:4px">Qatnashish uchun a'zolik kerak. Sovrinlar haqida ma'lumot tez orada.</p>
-    <button class="go" style="margin-top:12px" data-soon="Mavsum">Qatnashish</button></div>
+<section class="view" id="v-class">
+  <button class="back-btn" data-back="tests">&larr; Sinflarga qaytish</button>
+  <h2 id="cl-title">Sinf</h2><p class="sub">Bosqichlarni tartib bilan bajarish tavsiya etiladi, lekin istalganini ochish mumkin.</p><div id="cl-steps"></div>
+</section>
+
+<section class="view" id="v-guide">
+  <button class="back-btn" data-back="class">&larr; Bosqichlarga qaytish</button>
+  <h2 id="g-title">Qo'llanma</h2><div id="g-body"></div>
+  <button class="go" id="g-done" style="margin-top:18px;text-align:center">O'qib chiqdim, davom etish</button>
+</section>
+
+<section class="view" id="v-qa-topics">
+  <button class="back-btn" data-back="class">&larr; Bosqichlarga qaytish</button>
+  <h2 id="qt-title">Savol-javob</h2><p class="sub">Mavzuni tanlang:</p><div id="qt-list"></div>
+</section>
+
+<section class="view" id="v-qa-list">
+  <button class="back-btn" data-back="qa-topics">&larr; Mavzularga qaytish</button>
+  <h2 id="ql-title">Savollar</h2><p class="sub">Javobni ko'rish uchun savol ustiga bosing.</p><div id="ql-cards"></div>
 </section>
 
 <section class="view" id="v-rating">
@@ -162,122 +195,123 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 <nav><div>
 <button data-go="home" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Bosh</button>
 <button data-go="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Testlar</button>
-<button data-go="season"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l4 2V6l4 2 4-2v5l4-2v12zM9 21v-4h6v4"/></svg>Mavsum</button>
 <button data-go="rating"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 0 3 3"/></svg>Reyting</button>
 <button data-go="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
 </div></nav>
 
 <script>
-// Savollar bazasi (Barcha 45 ta test kiritilgan)
-window.SAVOLLAR = {
-  0: [ // Qadimgi davr (6-sinf)
-    { q: "Arxeologlar insoniyat tarixining boshlanishini qanday nom bilan atashadi?", o: ["Eneolit", "Paleolit", "Neolit", "Bronza"], a: 1 },
-    { q: "Teshiktosh g‘oridan (Boysun) topilgan neandertal bola suyak qoldig‘i qaysi davrga tegishli?", o: ["Ilk paleolit", "O‘rta paleolit (Mustye davri)", "So‘nggi paleolit", "Mezolit"], a: 1 },
-    { q: "Qadimgi Misrda ehromlar (piramidalar) asosan qaysi podshohlik davridan boshlab qurilmay qo‘yilgan?", o: ["Qadimgi podshohlik", "O‘rta podshohlik", "Yangi podshohlik", "So‘nggi podshohlik"], a: 1 },
-    { q: "Dunyo tarixidagi birinchi yozma qonunlar to‘plami qaysi davlatda yaratilgan?", o: ["Qadimgi Misr", "Bobil podsholigi", "Ossuriya", "Qadimgi Xitoy"], a: 1 },
-    { q: "Qadimgi Hindistonda momaqaldiroq va jang ma'budi kim deb e'tirof etilgan?", o: ["Brahma", "Indra", "Budda", "Ganesha"], a: 1 },
-    { q: "Qadimgi Xitoyda Chjou davlatida hukmdorlar o‘zlarini qanday atashgan?", o: ["Yer o‘g‘illari", "Osmon o‘g‘illari", "Quyosh vakillari", "Xudoning soyasi"], a: 1 },
-    { q: "Zardushtiylik e'tiqodiga ko‘ra, Ahriman (yovuzlik xudosi) bilan o‘tli chaqmoqlar otib kurashadigan ma'bud qaysi?", o: ["Axura Mazda", "Mitra", "Anaxita", "Tishtriya"], a: 0 },
-    { q: "Qadimgi Yunonistonda Marafon jangidan keyin g‘alaba xabarini Afinaga yugurib yetkazgan afsonaviy jangchi qancha masofani bosib o‘tgan?", o: ["21 km", "42 km", "50 km", "30 km"], a: 1 },
-    { q: "Qadimgi Xorazmning qadimiy Tuproqqal'a sharobxonasidan topilgan devoriy suratlar va yozuvlar qaysi xat namunasi hisoblanadi?", o: ["Mixxat", "Oromiy yozuvi asosidagi xorazmiy yozuvi", "Iyeroglif", "Finikiya alifbosi"], a: 1 },
-    { q: "Qang‘ davlatida dumaloq shakl nimaning ramzi bo‘lgan?", o: ["Quyosh va abadiylik", "Yer va hosildorlik", "Oy va suv", "Kuch-qudrat"], a: 0 },
-    { q: "Xitoy elchisi Chjan Szyan Farg‘ona (Davan) davlatidan o‘z yurtiga qanday nomdagi otlarni olib ketishga harakat qilgan?", o: ["Tulporlar", "Arg‘umoq otlar (\"Samoviy otlar\")", "Jangovar tuyalar", "Po‘lat otlar"], a: 1 },
-    { q: "Qadimgi Rimda xalq tribuni qaysi muhim huquqqa ega bo‘lgan?", o: ["Soliq yig‘ish", "\"Veto\" (taqiq qo‘yish) huquqi", "Urush e'lon qilish", "Yangi qonun yozish"], a: 1 },
-    { q: "Qadimgi Rimda shishaning sinishi yoki tosh parchalari yordamida devor yoki polga surat solish san'ati nima deb atalgan?", o: ["Freska", "Mozaika", "Relyef", "Skulptura"], a: 1 },
-    { q: "Qadimgi Rim tarixidagi eng yirik qullar qo‘zg‘oloniga kim boshchilik qilgan?", o: ["Yuliy Sezar", "Spartak", "Mark Krass", "Pompey"], a: 1 },
-    { q: "Xristian dinining muqaddas kitobi qanday nomlanadi?", o: ["Tavrot", "Injil (Bibliya)", "Qur'on", "Avesto"], a: 1 }
-  ],
-  1: [ // O'zbekiston tarixi (7-sinf)
-    { q: "O‘rta asrlar tarixi O‘zbekiston hududida asosan nechanchi asrlarni o‘z ichiga oladi?", o: ["IV–XIII asrlar", "V–XV asrlar", "VI–XVI asrlar", "III–XII asrlar"], a: 1 },
-    { q: "Ilk o‘rta asrlarda Xorazmda Afrig‘iylar sulolasiga qachon asos solingan?", o: ["305-yilda", "410-yilda", "520-yilda", "610-yilda"], a: 0 },
-    { q: "G‘arb tarixchilari \"oq xunnlar\" deb atagan elat qaysi?", o: ["Xioniylar", "Kidariylar", "Eftaliylar", "Qarluqlar"], a: 2 },
-    { q: "Turk xoqonligining asoschisi kim bo‘lgan va uning markazi qayer edi?", o: ["Istami yabg‘u — Buxoro", "Bumin xoqon — Oltoy", "To‘nyabg‘u — Suyob", "Tardu xoqon — Choch"], a: 1 },
-    { q: "G‘arbiy Turk xoqonligida hokimiyatning barcha bo‘g‘inlarida lavozim egalari qaysi unvonga ega bo‘lishi shart edi?", o: ["Shod", "O‘n o‘q el sardori", "Eltabar", "Tudun"], a: 1 },
-    { q: "751-yilda Talos vodiysida xitoyliklarga qarshi jang qilgan arab qo‘shiniga kim boshchilik qilgan?", o: ["Qutayba ibn Muslim", "Ziyod ibn Solih", "Abu Muslim", "Nasr ibn Sayyor"], a: 1 },
-    { q: "Muqanna boshchiligidagi \"Oq kiyimlilar\" qo‘zg‘oloni qaysi qal'ada qattiq qarshilik ko‘rsatgan?", o: ["Mug‘ qal'asi", "Som (Robiya) qal'asi", "Chilpiq", "Kampirtepa"], a: 1 },
-    { q: "Somoniylar davrida davlat boshqaruvi nechta devon orqali amalga oshirilgan?", o: ["5 ta", "8 ta", "10 ta", "12 ta"], a: 2 },
-    { q: "Sulton Mahmud G‘aznaviy Xorazmni qachon o‘z mulkiga qo‘shib olgan?", o: ["1004-yilda", "1017-yilda", "1025-yilda", "1040-yilda"], a: 1 },
-    { q: "Qoraxoniylar davriga oid, hozirgi Surxondaryo viloyatida joylashgan me'moriy yodgorlikni toping.", o: ["Ismoil Somoniy maqbarasi", "Jarqo‘rg‘on minorasi", "Qirqqiz qal'asi", "Kalyan minorasi"], a: 1 },
-    { q: "Saljuqiylar va g‘aznaviylar o‘rtasida 1040-yilda bo‘lib o‘tgan va g‘aznaviylar mag‘lubiyatga uchragan hal qiluvchi jang qayerda bo‘lgan?", o: ["Nishopur", "Dandanaqon", "G‘azna", "Marv"], a: 1 },
-    { q: "Anushteginiylar (Xorazmshohlar) sulolasining davlatini saltanat darajasiga ko‘targan eng qudratli hukmdor kim edi?", o: ["Qutbiddin Muhammad", "Otsiz", "Alouddin Muhammad", "Jaloliddin Manguberdi"], a: 2 },
-    { q: "Islom dinida hanafiy mazhabining asoschisi bo‘lgan buyuk alloma kim?", o: ["Imom Buxoriy", "Abu Hanifa (Imomi A'zam)", "Abu Mansur Moturudiy", "Burhoniddin Marg‘inoniy"], a: 1 },
-    { q: "\"Hadis ilmining sultoni\" degan sharafli unvonga sazovor bo‘lgan muhaddis kim?", o: ["At-Termiziy", "Imom Buxoriy", "Imom Muslim", "Al-Farg‘oniy"], a: 1 },
-    { q: "\"Al-Qonun fit-tib\" (Tib qonunlari) asarining muallifi kim?", o: ["Abu Rayhon Beruniy", "Abu Ali ibn Sino", "Mahmud Zamaxshariy", "Ismoil Jurjoniy"], a: 1 }
-  ],
-  2: [ // Jahon tarixi shartnomalar va ittifoqlar
-    { q: "Brest sulhi qaysi davlatlar o‘rtasida imzolangan va natijasi qanday bo‘lgan?", o: ["Rossiya va Germaniya; Rossiya urushdan chiqdi", "Fransiya va Germaniya; Elzas va Lotaringiya berildi", "Buyuk Britaniya va Usmonliylar imperiyasi", "AQSH va Yaponiya"], a: 0 },
-    { q: "1919-yil 28-iyunda imzolangan Versal tinchlik shartnomasiga ko‘ra asosiy javobgarlik kimga yuklatilgan edi?", o: ["Avstriya-Vengriya", "Bolgariya", "Germaniya", "Usmonliylar imperiyasi"], a: 2 },
-    { q: "Vashington konferensiyasida (1921–1922) imzolangan «Beshlar shartnomasi»ning asosiy mohiyati nima edi?", o: ["Tinch okean orollarini taqsimlash", "Dengiz floti tonnajini cheklash", "Xitoyning suverenitetini tan olish", "Yadro qurolini taqiqlash"], a: 1 },
-    { q: "1922-yil aprel oyida imzolangan Rapallo shartnomasini qaysi ikki davlat imzolagan?", o: ["Buyuk Britaniya va Fransiya", "Germaniya va Sovet Rossiyasi", "AQSH va Yaponiya", "Italiya va Fransiya"], a: 1 },
-    { q: "1925-yildagi Lokarno shartnomasi yana qanday nom bilan ataladi?", o: ["Reyn kafolat pakti", "Savedro Lamas pakti", "Antikomintern pakti", "Bag‘dod pakti"], a: 0 },
-    { q: "1928-yilgi Brian-Kellog paktining asosiy mazmuni nima edi?", o: ["Dengiz flotini qisqartirish", "Urushdan siyosat quroli sifatida voz kechish", "Savdo bojlarini bekor qilish", "O‘zaro yordam ko‘rsatish"], a: 1 },
-    { q: "1936-yil iyul oyida imzolangan Montryo shartnomasiga ko‘ra qaysi bo‘g‘ozlar ustidan nazorat Turkiyaga o‘tdi?", o: ["Bosfor va Dardanel", "Suvaysh kanali", "Gibraltar", "Bering bo‘g‘ozi"], a: 0 },
-    { q: "Myunxen shartnomasiga (1938-yil) ko‘ra Chexoslovakiyaning qaysi hududi Germaniyaga berildi?", o: ["Praga shahri", "Sudet viloyati", "Moraviya", "Slovakiya"], a: 1 },
-    { q: "1936-yil noyabrda imzolangan Antikomintern paktini dastlab qaysi davlatlar imzolagan edi?", o: ["Germaniya va Italiya", "Germaniya va Yaponiya", "Italiya va Yaponiya", "SSSR va Fransiya"], a: 1 },
-    { q: "1941-yil avgust oyida imzolangan «Atlantik nizom» kimlar tomonidan imzolangan edi?", o: ["Stalin va Ruzvelt", "Cherchill va Ruzvelt", "Stalin va Cherchill", "de Goll va Ruzvelt"], a: 1 },
-    { q: "1949-yil 4-aprelda Vashingtonda tuzilgan NATO tashkilotiga dastlab nechta davlat asos solgan?", o: ["8 ta", "10 ta", "12 ta", "15 ta"], a: 2 },
-    { q: "Varshava shartnomasi tashkiloti qachon tuzilgan va qachon tugatilgan?", o: ["1949-yil — 1989-yil", "1955-yil 14-may — 1991-yil 1-iyul", "1957-yil — 1993-yil", "1950-yil — 1990-yil"], a: 1 },
-    { q: "1954-yilgi Jeneva bitimiga ko‘ra Vetnam qaysi chiziq bo‘yicha bo‘lingan edi?", o: ["17-parallel", "38-parallel", "49-parallel", "21-parallel"], a: 0 },
-    { q: "1991-yil 8-dekabrda imzolangan Belovej bitimi nufuzli qaysi davlatning tugatilganini e'lon qildi?", o: ["Yugoslaviya", "SSSR", "Chexoslovakiya", "Germaniya demokratik respublikasi"], a: 1 },
-    { q: "1975-yil 1-avgustda imzolangan Helsinki Yakunlovchi aktida nechta davlat ishtirok etgan?", o: ["25 ta", "30 ta", "35 ta", "50 ta"], a: 2 }
-  ]
-};
+/* 6-sinf, Qadimgi dunyo tarixi: original savollar (qo'llanma boblari tartibida).
+   RAW qator: [savol, TO'G'RI javob, noto'g'ri1, noto'g'ri2, noto'g'ri3, izoh] */
+const RAW=[
+/* I bob */
+["Qaysi yunon tarixchisi “tarixning otasi” deb ataladi?","Gerodot","Strabon","Arrian","Ktesiy","Gerodot yunon-fors urushlariga bag'ishlangan “Tarix” asarini yozgan."],
+["Strabonning mashhur asari qanday nomlanadi?","“Geografiya”","“Tarix”","“Iliada”","“Rim tarixi”","Strabon “Geografiya” asarida ko'plab mamlakat va xalqlar haqida ma'lumot bergan."],
+["Aleksandrning O'rta Osiyodagi yurishlarini yozgan tarixchi kim?","Arrian","Gerodot","Strabon","Plutarx","Arrian milodiy II asrda yashagan yunon tarixchisi."],
+["Numizmatika qaysi buyumlarni o'rganadi?","Tangalarni","Qadimiy yozuvlarni","Qurol-yarog'larni","Xaritalarni","Numizmatlar tangalarni tadqiq qiladi."],
+["Qazishmalar orqali topilgan qadimiy ashyolarni qaysi fan o'rganadi?","Arxeologiya","Numizmatika","Geografiya","Xronologiya","Arxeologiya moddiy qoldiqlar asosida o'tmishni o'rganadi."],
+["Gerodotning “Tarix” asari qaysi urushlarga bag'ishlangan?","Yunon-fors urushlariga","Troya urushiga","Pun urushlariga","Peloponnes urushiga","Asarda O'rta Osiyo haqida ham ma'lumotlar bor."],
+["Insoniyat tarixining eng qadimgi davri qanday nomlanadi?","Paleolit (qadimgi tosh davri)","Neolit","Bronza davri","Temir davri","Paleolitda odamlar ovchilik va termachilik bilan kun kechirgan."],
+["Dehqonchilik va chorvachilikka o'tish qaysi xo'jalik turining boshlanishi?","Ishlab chiqaruvchi xo'jalik","O'zlashtiruvchi xo'jalik","Savdo xo'jaligi","Yig'ma xo'jalik","Odamlar tayyorini o'zlashtirishdan o'zlari ishlab chiqarishga o'tgan."],
+["“Milodiy” hisob qaysi voqeadan boshlanadi?","Iso Masihning tug'ilishidan","Rim shahrining asos solinishidan","Aleksandr vafotidan","Birinchi Olimpiya o'yinlaridan","Bu an'anaviy hisob: undan oldingi yillar “mil. avv.” deyiladi."],
+/* II bob */
+["Yuqori va Quyi Misrni birlashtirib, yagona davlat tuzgan fir'avn kim?","Menes","Xufu","Tutmos III","Yaxmos","Menes birlashgan Misrning poytaxti Memfisni qurgan."],
+["Qaysi fir'avnning piramidasi eng katta?","Xufu","Menkaura","Tutanxamon","Menes","Xufu piramidasi taxminan 147 m balandlikda bo'lgan."],
+["Shampolyon Misr yozuvini qaysi topilma yordamida o'qigan?","Rozetta bitiktoshi","Behistun yozuvi","Xammurapi qonunlari","Avesto","Shampolyon buni 1822-yilda uddalagan."],
+["Misrda Yangi podsholik davrini boshlab, giksoslarni haydagan hukmdor kim?","Yaxmos","Menes","Xufu","Kambiz II","Yaxmos Fiva hukmdori bo'lgan."],
+["Xammurapi qonunlari nimaga bitilgan?","Tosh ustunlarga","Papirusga","Teri pergamentga","Bronza lavhalarga","Qonunlar juda qattiqqo'l bo'lgan."],
+["Ossuriya hukmdori Ashshurbanipalning sopol taxtachalardan iborat kutubxonasi qaysi shaharda bo'lgan?","Nineviya","Bobil","Memfis","Fiva","Nineviya Ossuriyaning poytaxti edi."],
+["Ishtar darvozasi qaysi podsho davrida qurilgan?","Navuxodonosor II","Xammurapi","Sargon I","Kiaksar","Uning davrida Yangi Bobil kuchining cho'qqisiga chiqqan."],
+["Kir II Bobilni qaysi yilda bosib olgan?","Mil. avv. 539-yil","Mil. avv. 558-yil","Mil. avv. 525-yil","Mil. avv. 330-yil","Kir II Ahamoniylardan bo'lgan fors shohi."],
+["Doro I joriy qilgan tanga qanday nomlanadi?","Darik","Drahma","Dinor","Tetradraxma","Doro I yana “shoh yo'li”ni ham joriy qilgan."],
+["Buddaning ta'limotiga ko'ra, inson azobiga nima sabab bo'ladi?","Istaklar","Kambag'allik","Urushlar","Kasalliklar","Budda shahzoda bo'lib, saroyni tark etgan."],
+["Qaysi hukmdorning maqbarasidan 6 mingta sopol askar haykali topilgan?","Sin Shixuandi","Menes","Xammurapi","Doro I","U Xitoyni birlashtirib, viloyatlarga bo'lgan."],
+/* III bob */
+["Qarzdorni qul qilishni bekor qilgan Afina islohotchisi kim?","Solon","Drakont","Perikl","Filipp II","Solon mil. avv. 594-yilda Xalq majlisini tikladi."],
+["Qonunlari qattiqqo'lligi uchun “qon bilan yozilgan” deyilgan afinalik qonunchi kim?","Drakont","Solon","Perikl","Leonid","Uning qonunlarida har qanday buzilishga o'lim jazosi berilgan."],
+["Perikl davrida Akropolda qurilishi boshlangan mashhur ibodatxona qaysi?","Parfenon","Kolizey","Panteon","Ishtar darvozasi","Qurilishga haykaltarosh Fidiy boshchilik qilgan."],
+["Fermopil darasini “uch yuz spartalik” bilan himoya qilgan podsho kim?","Leonid","Kserks","Perikl","Filipp II","Mil. avv. 480-yilda Leonid halok bo'lgan."],
+["Kserks fors floti qaysi dengiz jangida yengilgan?","Salamin","Xeroniya","Aktsiy","Fermopil","Shundan keyin Kserks chekinishga majbur bo'lgan."],
+["Mil. avv. 338-yilda Xeroniyada yunonlarni yengib, Korinf ittifoqini tuzgan podsho kim?","Filipp II","Aleksandr","Perikl","Kserks","Filipp II Aleksandrning otasi."],
+["Aleksandr mil. avv. 330-yilda qaysi shohni yengib, Fors davlatini bosib oldi?","Doro III","Kserks","Kir II","Doro I","Doro III Ahamoniylarning oxirgi shohi edi."],
+["Troya urushida yunonlar Troyani nima yordamida olgan?","Yog'och ot","Dengiz qamali","Er osti yo'li","Ochlik","Bu hiyla Odissey maslahati bilan qilingan."],
+["“Iliada” va “Odisseya” dostonlarining muallifi kim?","Gomer","Sofokl","Aristofan","Gerodot","Gomer qadimgi yunon shoiri."],
+["Hamma narsa ko'rinmas mayda zarralar — atomlardan iborat, degan faylasuf kim?","Demokrit","Geraklit","Diogen","Arximed","Geraklit esa hamma narsa olovdan kelib chiqqan, degan."],
+["Richag qonunini ishlab chiqqan va “Evrika!” degan olim kim?","Arximed","Demokrit","Geraklit","Gomer","Arximed fizik va matematik bo'lgan."],
+/* IV bob */
+["Kir II ga qarshi jangda g'alaba qozongan massagetlar malikasi kim?","To'maris","Apama","Roksana","Kleopatra","Bu jangda Kir II halok bo'lgan (mil. avv. 530-yil)."],
+["Doro I ga qarshi Marg'iyona qo'zg'olonining rahbari kim?","Frada","Spitaman","Bess","Dadarshish","Qo'zg'olon mil. avv. 522-yilda bostirilgan."],
+["Aleksandr yaqinlashganda Baqtrani tashlab, Amudaryo ortiga qochgan Baqtriya satrapi kim?","Bess","Dadarshish","Frada","Diodot","Bess Doro III dan keyingi satrap sifatida tilga olinadi."],
+["Spitaman qaysi hududdagi qo'zg'olonga boshchilik qilgan?","Sug'diyona","Xorazm","Marg'iyona","Farg'ona","Qo'zg'olon mil. avv. 329–328-yillarda bo'lgan."],
+["Aleksandr sug'd zodagoni Oksiartning qaysi qiziga uylangan?","Roksana","Apama","Yelena","Kleopatra","Aleksandr Oksiartning tog' qal'asini olgach, Roksanaga uylangan."],
+["Salavkiylar davlatiga kim asos solgan?","Salavk","Diodot","Antiox","Yevtidem","Salavkning rafiqasi Apama Spitamanning qizi edi."],
+["Yunon-Baqtriya davlatiga asos solib, o'zini podsho deb e'lon qilgan hukmdor kim?","Diodot","Salavk","Demetriy","Mitridat I","Bu voqea mil. avv. 250-yil atrofida bo'lgan."],
+["Qaysi Kushon podshosi davrida davlat ulkan imperiyaga aylanib gullagan?","Kanishka","Diodot","Mitridat I","Farasman","Uning davrida Hindiston, Xitoy va Rim bilan aloqalar kuchaygan."],
+["Xitoy elchisi Chjan Szyan qaysi hududga kelgan?","Farg'ona","Xorazm","Baqtriya","Marg'iyona","Uning yo'li Buyuk ipak yo'liga asos bo'lgan."],
+["Xitoyni G'arb bilan bog'lovchi yo'lni “Ipak yo'li” deb atagan nemis geografi kim?","Ferdinand Rixtgofen","Chjan Szyan","Strabon","Shampolyon","Bu nom 1877-yilda berilgan."],
+/* V bob */
+["Rivoyatga ko'ra, Rim shahriga qaysi aka-uka asos solgan?","Romul va Rem","Brut va Sezar","Krass va Pompey","Antoniy va Oktavian","Ularni ona bo'ri boqqan, deyiladi."],
+["Rim qachon asos solingan (rivoyat bo'yicha)?","Mil. avv. 753-yilda","Mil. avv. 509-yilda","Mil. avv. 44-yilda","Milodiy 476-yilda","Bu sana rivoyatga asoslangan."],
+["Rimda respublika qachon o'rnatilgan?","Mil. avv. 509-yilda","Mil. avv. 753-yilda","Milodiy 395-yilda","Milodiy 476-yilda","Podsho Tarkviniy (Mag'rur) haydalgach respublika boshlangan."],
+["Spartak boshchiligidagi qullar qo'zg'oloni qaysi tog'dan boshlangan?","Vezuviy","Alp","Olimp","Etna","Spartak Kapuyadagi gladiatorlar maktabidan qochgan."],
+["Spartak qo'zg'olonini qaysi sarkarda bostirgan?","Mark Krass","Antoniy","Brut","Trayan","Spartak mil. avv. 71-yilda halok bo'lgan."],
+["Yuliy Sezar mil. avv. 49-yilda qo'shini bilan qaysi daryodan o'tgan?","Rubikon","Tibr","Dunay","Nil","“Qur'a tashlandi!” iborasi shu voqea bilan bog'liq."],
+["Yuliy Sezar qaysi yilda senatorlar fitnasi natijasida o'ldirilgan?","Mil. avv. 44-yilda","Mil. avv. 49-yilda","Mil. avv. 29-yilda","Mil. avv. 71-yilda","Fitnaga Brut boshchilik qilgan."],
+["Rim imperiyasining asoschisi, Sezarning jiyani kim?","Oktavian Avgust","Mark Antoniy","Brut","Pompey","Mil. avv. 29-yilda u imperator unvoni va Avgust nomini olgan."],
+["Antoniy va Kleopatra dengiz jangida yengilgach, Misr nimaga aylangan?","Rim provinsiyasiga","Mustaqil davlatga","Fors satrapiyasiga","Salavkiylar davlatiga","Bu g'alabani Oktavian qozongan."],
+["Milodiy II asr Rimning qaysi imperatori davrida “oltin asr” deb atalgan?","Trayan","Neron","Kaligula","Konstantin","Trayan Dunay bo'ylaridagi daklar bilan urush olib borgan."],
+["313-yilda xristianlikni boshqa dinlar bilan teng huquqli deb e'lon qilgan imperator kim?","Konstantin","Neron","Feodosiy","Trayan","330-yilda u Vizantiyni yangi poytaxt qilgan."],
+["Rim imperiyasi G'arbiy va Sharqiy qismlarga qachon bo'lingan?","Milodiy 395-yilda","Milodiy 313-yilda","Milodiy 410-yilda","Milodiy 476-yilda","Bu Feodosiy vafotidan keyin, uning ikki o'g'li o'rtasida bo'lingan."],
+["Oxirgi G'arbiy Rim imperatori Romulni taxtdan agdargan german sarkardasi kim?","Odoakr","Alarix","Attila","Brut","Bu voqea 476-yilda bo'lgan va G'arbiy Rim tugagan."],
+["Rim ma'budlari ichida bosh ma'bud qaysi?","Yupiter","Mars","Neptun","Vulqon","Mars urush, Neptun dengiz ma'budi."],
+["Iso Masih rivoyatga ko'ra qaysi shaharda tug'ilgan?","Vifleyem","Rim","Memfis","Afina","Vifleyem Rim hokimiyati ostidagi Falastinda joylashgan."]
+];
+window.SAVOLLAR={0:RAW.map((r,i)=>{const o=r.slice(2,5),a=i%4;o.splice(a,0,r[1]);return{q:r[0],o,a}})};
+window.IZOH={0:RAW.map(r=>r[5])};
 
-
-/* Kitobdan izohlar: har bir savolga (tartib raqami savollar bilan bir xil) */
-window.IZOH = {
-  0: [
-    "Paleolit («qadimgi tosh davri») insoniyat tarixining eng uzoq va birinchi davri. Odamlar chaqmoqtoshdan qurol yasab, ovchilik va termachilik bilan kun kechirgan.",
-    "Teshiktosh g‘oridan (Boysun tog‘lari) 1938-yilda A. Okladnikov neandertal bola skeletini topgan. U o‘rta paleolit (Mustye) davriga tegishli.",
-    "Kitobdagi javob: O‘rta podshohlik. Ehromlar qurilishi Qadimgi podshohlik davrida avjiga chiqqan (Xeops ehromi), keyinchalik ularning o‘rnini qoyadagi maqbaralar egallagan.",
-    "Birinchi yozma qonunlar to‘plami Bobil podshosi Hammurapi (m.av. XVIII asr) qonunlaridir. U 282 moddadan iborat bo‘lib, tosh ustunga bitilgan.",
-    "Qadimgi hind e’tiqodida (Rigveda) Indra momaqaldiroq, yomg‘ir va jang xudosi, eng ulug‘lanadigan xudolardan biri bo‘lgan.",
-    "Chjou hukmdorlari o‘zlarini «Tyanszi» — «Osmon o‘g‘li» deb atagan. Ularning hokimiyati osmon irodasi (Osmon mandati) bilan berilgan, deb hisoblangan.",
-    "Axura Mazda — zardushtiylikda yaxshilik va nur xudosi. U yovuzlik ruhi Ahriman bilan kurashadi. Zardushtiylikning muqaddas kitobi — Avesto.",
-    "Marafon jangidan so‘ng g‘alaba xabarini Afinaga yetkazgan jangchi taxminan 42 km masofani yugurib o‘tgan. Hozirgi marafon yugurishi shu voqeadan kelib chiqqan.",
-    "Tuproqqal’a (milodiy III–IV asrlar) Xorazmshohlar saroyi bo‘lgan. U yerdan topilgan hujjat va yozuvlar oromiy alifbosi asosidagi xorazmiy yozuvidir.",
-    "Qang‘ davlatida dumaloq shakl Quyosh va abadiylik ramzi hisoblangan. Qang‘ davlati Sirdaryoning o‘rta oqimida joylashgan.",
-    "Chjan Szyan Davan (Farg‘ona) otlarini ko‘rib, ularni «samoviy otlar» deb atagan. Bu otlar kuchi va chidamliligi bilan mashhur bo‘lgan, shu sabab Xitoy Farg‘onaga qiziqib qolgan.",
-    "Xalq tribuni plebeylar manfaatini himoya qilgan. Uning asosiy huquqi — senat qarori va mansabdorlar harakatiga «veto» (taqiq) qo‘yish edi.",
-    "Mozaika — rangli tosh, shisha (smalta) bo‘lakchalarini yopishtirib devor yoki polga rasm yaratish san’ati. Freska esa ho‘l suvoq ustiga bo‘yoq bilan chiziladi.",
-    "Spartak boshchiligidagi qullar qo‘zg‘oloni (m.av. 73–71-yillar) Rim tarixidagi eng yirik qo‘zg‘olon bo‘lgan. Uni Mark Krass bostirgan.",
-    "Xristianlarning muqaddas kitobi — Injil (Bibliya). Qur’on — islom, Avesto — zardushtiylik, Tavrot — yahudiylik muqaddas kitobi."
-  ],
-  1: [
-    "Darslik bo‘yicha Markaziy Osiyoda o‘rta asrlar tarixi V–XV asrlarni o‘z ichiga oladi.",
-    "Afrig‘iylar sulolasi 305-yilda Xorazmda tashkil topgan (poytaxti Kat). Bu sulola Xorazmshohlar nomi bilan 995-yilgacha hukmronlik qilgan.",
-    "Eftaliylar (oq xunnlar) V asrda Markaziy Osiyoning katta qismini egallagan. Xioniylar va kidariylar ulardan oldingi ko‘chmanchi elatlar.",
-    "Turk xoqonligiga 552-yilda Bumin xoqon Oltoyda asos solgan. Uning ukasi Istami yabg‘u g‘arbiy hududlarni boshqargan.",
-    "G‘arbiy Turk xoqonligi «O‘n o‘q» (o‘n qabila) ittifoqiga tayangan. Kitob bo‘yicha barcha bo‘g‘indagi boshliqlar «O‘n o‘q el sardori» unvoniga ega bo‘lishi shart edi.",
-    "751-yilda Talos vodiysida arab qo‘shini Xitoy (Tan) qo‘shinini mag‘lub etgan. Arab qo‘shiniga Ziyod ibn Solih boshchilik qilgan.",
-    "Muqanna («Oq kiyimlilar») qo‘zg‘oloni 776–783-yillarda bo‘lgan. Qo‘zg‘olonchilar Som (Sanam) qal’asida qattiq qarshilik ko‘rsatgan.",
-    "Somoniylar davlati Buxoroda markazlashgan boshqaruvga ega bo‘lib, 10 ta devon orqali boshqarilgan (vazir, mustavfiy, sohibi shurat, sohibi barid va boshqalar).",
-    "Mahmud G‘aznaviy Xorazmni 1017-yilda o‘z mulkiga qo‘shib olgan.",
-    "Jarqo‘rg‘on minorasi Surxondaryo viloyatida, Jarqo‘rg‘on tumanida joylashgan. U 1108-yilda qurilgan qirrali ustun shaklidagi me’moriy yodgorlikdir.",
-    "1040-yilda Dandanaqon jangida saljuqiylar (Tug‘rulbek va Chag‘ribek) g‘aznaviylarni tor-mor etgan. Shundan so‘ng Saljuqiylar davlati kuchaygan.",
-    "Anushteginiylar saltanatini Alouddin Muhammad (1200–1220) eng qudratli darajaga ko‘targan. Davlat keyinchalik mo‘g‘ullar istilosida qulagan.",
-    "Hanafiy mazhabining asoschisi — Abu Hanifa (Imomi A’zam). Moturudiy kalom ilmi (moturudiya aqidasi), Marg‘inoniy esa «Hidoya» asari bilan mashhur.",
-    "Imom Buxoriy «Al-Jome as-sahih» to‘plamini yaratgan va «Hadis ilmining sultoni» deb ulug‘langan. Termiziy «Sunan» asarining muallifi.",
-    "«Al-Qonun fit-tib» («Tib qonunlari») asarini Abu Ali ibn Sino yozgan. U tibbiyotning asosiy qo‘llanmasi sifatida asrlar davomida o‘qitilgan."
-  ],
-  2: [
-    "Brest sulhi 1918-yil 3-martda Sovet Rossiyasi va Germaniya bloki o‘rtasida imzolangan. Rossiya Birinchi jahon urushidan chiqdi, katta hududlardan ayrildi.",
-    "Versal shartnomasi (1919-yil 28-iyun) bo‘yicha urush uchun asosiy javobgarlik Germaniyaga yuklatildi. U tovon to‘ladi va qurolli kuchi cheklandi.",
-    "Vashington konferensiyasida (1921–1922) «Beshlar shartnomasi» harbiy dengiz floti tonnajini cheklagan (AQSH, Buyuk Britaniya, Yaponiya, Fransiya, Italiya).",
-    "Rapallo shartnomasi 1922-yil aprelda Germaniya va Sovet Rossiyasi o‘rtasida imzolangan. Ular diplomatik aloqa o‘rnatib, o‘zaro da’volardan voz kechgan.",
-    "Lokarno shartnomasi (1925) «Reyn kafolat pakti» deb ham ataladi. U Germaniyaning g‘arbiy chegaralari daxlsizligini kafolatlagan.",
-    "Brian–Kellog pakti (1928) urushdan milliy siyosat quroli sifatida voz kechishni e’lon qilgan.",
-    "Montryo shartnomasi (1936-yil iyul) bo‘yicha Turkiya Bosfor va Dardanel bo‘g‘ozlari ustidan suverenitetni tikladi.",
-    "Myunxen kelishuvi (1938) bo‘yicha Chexoslovakiyaning Sudet viloyati Germaniyaga berildi. Kelishuvga Buyuk Britaniya, Fransiya, Germaniya va Italiya rahbarlari imzo chekkan.",
-    "Antikomintern pakti 1936-yil noyabrda Germaniya va Yaponiya o‘rtasida imzolangan. Italiya unga 1937-yilda qo‘shilgan.",
-    "Atlantik nizom 1941-yil avgustda Buyuk Britaniya bosh vaziri Cherchill va AQSH prezidenti Ruzvelt tomonidan e’lon qilingan.",
-    "NATO 1949-yil 4-aprelda Vashingtonda tuzilgan. Uning dastlabki a’zolari 12 ta davlat edi.",
-    "Varshava shartnomasi tashkiloti 1955-yil 14-mayda tuzilgan va 1991-yil 1-iyulda tugatilgan.",
-    "1954-yilgi Jeneva bitimiga ko‘ra Vetnam 17-parallel bo‘yicha shimol va janubga bo‘lingan.",
-    "Belovej bitimi 1991-yil 8-dekabrda imzolangan. U SSSR tugatilganini e’lon qilib, MDH tuzilishiga asos bo‘lgan.",
-    "Helsinki Yakunlovchi akti 1975-yil 1-avgustda 35 davlat tomonidan imzolangan. U Yevropada xavfsizlik va hamkorlik asoslarini belgilagan."
-  ]
-};
+/* Savol-javob: har bob uchun bitta mavzu */
+const QA_EXTRA={6:[
+{id:"6-1",title:"I bob. Eng qadimgi tuzumdan sivilizatsiya sari",items:[
+{q:"Tarix fanining otasi kim?",a:"Gerodot. U yunon-fors urushlari haqida “Tarix” asarini yozgan."},
+{q:"Strabon qanday asar yozgan?",a:"“Geografiya” asarini: unda ko'plab mamlakat va xalqlar haqida ma'lumot bor."},
+{q:"Arrian nima haqida yozgan?",a:"Aleksandrning O'rta Osiyodagi yurishlari haqida."},
+{q:"Arxeologiya nimani o'rganadi?",a:"Qazishmalar orqali topilgan qadimiy ashyolarni."},
+{q:"Numizmatika nimani o'rganadi?",a:"Tangalarni."},
+{q:"Qadimgi tosh davri nima deb ataladi?",a:"Paleolit. Odamlar ovchilik va termachilik bilan yashagan."}]},
+{id:"6-2",title:"II bob. Qadimgi Sharq va O'rta Osiyo",items:[
+{q:"Menes nima bilan mashhur?",a:"Yuqori va Quyi Misrni birlashtirib, yagona davlat tuzgan; poytaxti Memfis."},
+{q:"Xufu piramidasi haqida nimalarni bilasiz?",a:"U eng katta piramida, taxminan 147 m balandlikda, mil. avv. 2600-yil atrofida qurilgan."},
+{q:"Shampolyon nimaga erishgan?",a:"Rozetta bitiktoshi yordamida Misr yozuvini o'qigan (1822-yil)."},
+{q:"Xammurapi qonunlari qanday bo'lgan?",a:"Tosh ustunlarga yozilgan, juda qattiqqo'l qonunlar."},
+{q:"Kir II qaysi davlatlarni bo'ysundirgan?",a:"Midiya, Bobil (mil. avv. 539-yil), Falastin va Finikiyani."},
+{q:"Doro I qanday islohotlar o'tkazgan?",a:"Davlatni satrapiyalarga bo'lgan, “darik” tangasi va “shoh yo'li”ni joriy etgan."},
+{q:"Zardushtiylikning muqaddas kitobi qaysi?",a:"Avesto."}]},
+{id:"6-3",title:"III bob. Qadimgi Yunoniston",items:[
+{q:"Solon qanday islohot o'tkazgan?",a:"Qarzdorni qul qilishni bekor qilgan, Xalq majlisini tiklagan."},
+{q:"Drakont qonunlari nima uchun mashhur?",a:"Juda qattiq bo'lgani uchun: har qanday buzilishga o'lim jazosi berilgan."},
+{q:"Perikl davrining o'ziga xosligi nima?",a:"Afina eng qudratli bo'lgan, demokratiya gullagan, Parfenon qurilishi boshlangan."},
+{q:"Fermopil jangida kim qahramonlik ko'rsatgan?",a:"Sparta podshosi Leonid va uning “uch yuz spartalik”i (mil. avv. 480-yil)."},
+{q:"Filipp II qanday muvaffaqiyatga erishgan?",a:"338-yilda Xeroniyada yunonlarni yengib, Korinf ittifoqini tuzgan."},
+{q:"Troya qanday olingan?",a:"Yunonlar Odissey maslahati bilan yasagan yog'och ot yordamida."},
+{q:"Arximed nima bilan mashhur?",a:"Richag qonunini ishlab chiqqan, “Evrika!” iborasi unga tegishli."}]},
+{id:"6-4",title:"IV bob. Mil. avv. VI – mil. III asrlarda O'rta Osiyo",items:[
+{q:"To'maris kim?",a:"Massagetlar malikasi; mil. avv. 530-yilda Kir II qo'shinini yengib, Kirni halok qilgan."},
+{q:"Frada kim?",a:"Doro I ga qarshi Marg'iyona qo'zg'olonining rahbari (mil. avv. 522-yil)."},
+{q:"Spitaman qanday qo'zg'olonga boshchilik qilgan?",a:"Aleksandrga qarshi sug'diylar qo'zg'oloniga (mil. avv. 329–328-yillar)."},
+{q:"Aleksandr kimning qiziga uylangan?",a:"Sug'd zodagoni Oksiartning qizi Roksanaga."},
+{q:"Salavkiylar davlatiga kim asos solgan?",a:"Aleksandr lashkarboshisi Salavk, mil. avv. 312-yildan."},
+{q:"Yunon-Baqtriya davlati qachon va kim tomonidan tashkil etilgan?",a:"Mil. avv. 250-yil atrofida Diodot tomonidan."},
+{q:"Kanishka davrida Kushon davlati qanday bo'lgan?",a:"Ulkan imperiyaga aylanib gullagan, Hindiston, Xitoy va Rim bilan aloqalar yo'lga qo'yilgan."},
+{q:"“Ipak yo'li” nomini kim bergan?",a:"Nemis geografi Ferdinand Rixtgofen, 1877-yilda."}]},
+{id:"6-5",title:"V bob. Qadimgi Rim",items:[
+{q:"Rimga kim asos solgan (rivoyat)?",a:"Romul va Rem, mil. avv. 753-yilda."},
+{q:"Rimda respublika qachon o'rnatilgan?",a:"Mil. avv. 509-yilda, podsho Tarkviniy haydalgach."},
+{q:"Spartak qo'zg'oloni qachon bo'lgan va kim bostirgan?",a:"Mil. avv. 74–71-yillarda; Mark Krass bostirgan."},
+{q:"Sezar Rubikondan o'tishi nimani anglatgan?",a:"Mil. avv. 49-yilda u qo'shini bilan o'tib, hokimiyat uchun fuqarolar urushini boshlagan."},
+{q:"Rim imperiyasiga kim asos solgan?",a:"Oktavian Avgust, mil. avv. 29-yildan."},
+{q:"Konstantin qanday ishlar qilgan?",a:"313-yilda xristianlikni teng huquqli deb e'lon qilgan, 330-yilda Vizantiyni yangi poytaxt qilgan."},
+{q:"Rim imperiyasi qachon bo'lingan?",a:"395-yilda G'arbiy va Sharqiy qismlarga."},
+{q:"G'arbiy Rim imperiyasi qachon qulagan?",a:"476-yilda: Odoakr imperator Romulni agdargan."}]}
+]};
 
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#0A1230");tg.setBackgroundColor("#0A1230")}catch(e){}}
@@ -300,7 +334,7 @@ function drawRoad(){const streak=curStreak();$("road").innerHTML=["Xiva","Buxoro
 
 /* Natijalarni saqlash: Telegram bulutli xotirasi, bo'lmasa brauzer xotirasi */
 const KEY="tarix_v1";
-let P={first:{},best:{},tries:0,sumPct:0,pts:0,last:"",streak:0};
+let P={first:{},best:{},tries:0,sumPct:0,pts:0,last:"",streak:0,prog:{}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const cloud=()=>{try{return tg&&tg.CloudStorage&&tg.isVersionAtLeast&&tg.isVersionAtLeast("6.9")?tg.CloudStorage:null}catch(e){return null}};
 const store={
@@ -308,12 +342,12 @@ const store={
   set(v){const c=cloud();if(c){c.setItem(KEY,v);return}try{localStorage.setItem(KEY,v)}catch(e){}}
 };
 const save=()=>store.set(JSON.stringify(P));
+window.CLASSES_READY=false;
 const dayStr=d=>{try{return d.toLocaleDateString("sv-SE")}catch(e){return d.toISOString().slice(0,10)}};
 const yest=()=>dayStr(new Date(Date.now()-864e5));
 function curStreak(){return(P.last===dayStr(new Date())||P.last===yest())?P.streak:0}
 function touchStreak(){const t=dayStr(new Date());if(P.last===t)return;P.streak=(P.last===yest())?P.streak+1:1;P.last=t}
 const TITLES=[["Bitikchi",0],["Mirzo",100],["Mudarris",250],["Alloma",400]];
-const MILES=[["Ulug'bek madrasasi",100],["Sherdor madrasasi",250],["Tillakori madrasasi",400]];
 const curTitle=()=>TITLES.filter(t=>P.pts>=t[1]).pop()[0];
 function record(era,sc,tot){
   let gained=0;
@@ -329,23 +363,15 @@ function drawProfile(){
   $("pf-p").textContent=P.pts;$("ttl").textContent="Unvon: "+curTitle();
 }
 function drawTitles(){$("titles").innerHTML=TITLES.map(t=>`<div class="mile ${P.pts>=t[1]?"":"off"}">${gl("minaret")}<div><b>${t[0]}</b><p class="sub">${t[1]} ball</p></div></div>`).join("")}
-function drawMiles(){
-  $("sbar").style.width=Math.min(100,P.pts/MILES[2][1]*100)+"%";$("stxt").textContent=P.pts+" ball to'plandi";
-}
 function drawRating(){
   const nm=u?esc(u.first_name):"Siz";$("podium").innerHTML="";
   $("ranks").innerHTML=`<div class="rk"><b>-</b><span>${nm}</span><b>${P.pts}</b></div><p class="note" style="margin-top:6px">Bu sizning shaxsiy natijangiz. Hamma foydalanuvchilar reytingi umumiy server ulangach chiqadi.</p>`;
 }
-function refresh(){$("coins").textContent=P.pts+" ball";drawRoad();renderEras();drawProfile();drawTitles();drawMiles();drawRating()}
+function refresh(){if(window.CLASSES_READY){drawClasses();if(curCls)drawClass(curCls)}$("coins").textContent=P.pts+" ball";drawRoad();renderEras();drawProfile();drawTitles();drawRating()}
 
 /* Davrlar */
 const eras=[
-  {title:"Qadimgi davr", sub:"Miloddan avvalgi davr - VII asr", icon:"flame", c1:"#8A3F10", c2:"#C27A2A", key:0},
-  {title:"O'zbekiston tarixi", sub:"Ilk o'rta asrlar va boshqalar", icon:"minaret", c1:"#0F5E63", c2:"#1B9AA0", key:1},
-  {title:"Jahon tarixi (Shartnomalar)", sub:"1918–2008-yillar", icon:"dome", c1:"#1E3F9E", c2:"#3560C8", key:2},
-  {title:"Xonliklar davri", sub:"XVI-XIX asrlar", icon:"fort", c1:"#1C5B3E", c2:"#2E8B5F", key:null},
-  {title:"Mustamlaka va sovet davri", sub:"1860-1991 yillar", icon:"cotton", c1:"#5A1F1F", c2:"#9A3434", key:null},
-  {title:"Mustaqillik yillari", sub:"1991 yildan hozirgacha", icon:"sun", c1:"#1D6FB8", c2:"#5AB2E8", key:null}
+  {title:"Qadimgi dunyo tarixi", sub:"6-sinf: qadimgi davrdan Rim imperiyasigacha", icon:"flame", c1:"#8A3F10", c2:"#C27A2A", key:0}
 ];
 
 function renderEras(){
@@ -355,7 +381,7 @@ function renderEras(){
       count=window.SAVOLLAR[e.key].length;
     }
     const b=e.key!==null?P.best[e.key]:null;const bp=b?Math.round(b[0]/b[1]*100):0;const bt=e.key===null?"Tez orada":b?"Eng yaxshi: "+b[0]+" / "+b[1]:count+" savol";
-    let attr = e.key!==null ? `data-era="${e.key}"` : `data-soon="${e.title}"`;
+    let attr = e.key===0 ? `data-cls="6"` : e.key===1 ? `data-cls="7"` : e.key!==null ? `data-era="${e.key}"` : `data-soon="${e.title}"`;
     return `<button class="era" style="--a:${e.c1};--b:${e.c2}" ${attr}>
       ${gl(e.icon)}<strong>${e.title}</strong><small>${e.sub}</small>
       <div class="bar"><i style="width:${bp}%"></i></div><em>${bt}</em>
@@ -493,26 +519,156 @@ function showResults(){
   modal.querySelector("#r-close").onclick=()=>modal.remove();
 }
 
-/* Testlar va boshqa bo'limlar */
-const tests=[["Qadimgi davr, 1-test","Davrlar",15,15,"4.2k",0],["O'zbekiston tarixi, 1-test","Davrlar",15,15,"3.1k",0],
-["Jahon tarixi va shartnomalar","Davrlar",15,15,"3.5k",0],["Xonliklar davri, 1-test","Davrlar",15,15,"2.2k",0],
-["Sertifikat sinov testi","Sertifikat",50,60,"1.6k",1]];
-let cat="Barchasi",term="";
-function drawTests(){$("tests").innerHTML=tests.filter(t=>(cat==="Barchasi"||t[1]===cat)&&t[0].toLowerCase().includes(term)).map(t=>
-`<div class="card test"><b>${t[0]}</b>${t[5]?'<span class="vip">A\'zolar</span>':""}<p class="meta">${t[2]} savol &nbsp;·&nbsp; ${t[3]} daqiqa &nbsp;·&nbsp; ${t[4]} kishi</p><button class="go ${t[5]?"lock":""}" ${t[0].includes("Qadimgi")?'data-era="0"':t[0].includes("O'zbekiston")?'data-era="1"':t[0].includes("Jahon")?'data-era="2"':`data-soon="${t[0]}"`}>${t[5]?"Ochish uchun a'zo bo'ling":"Ishlash"}</button></div>`).join("")||'<p class="note">Hech narsa topilmadi.</p>'}
-$("chips").innerHTML=["Barchasi","Davrlar","Sertifikat"].map((c,i)=>`<button class="chip ${i?"":"on"}" data-cat="${c}">${c}</button>`).join("");
-$("q").oninput=e=>{term=e.target.value.toLowerCase();drawTests()};drawTests();
-
+/* Sinflar: qo'llanma -> savol-javob -> mavzulashtirilgan test -> sertifikat testi */
+const CLASSES={6:{era:0,cert:null}}; // cert: boblashtirilgan sertifikat testi kaliti (keyin qo'shiladi)
+let curCls=null,curTopics=[];
+const prog=c=>(P.prog[c]=P.prog[c]||{g:0,qa:[]});
+const SUBV={"class":1,guide:1,"qa-topics":1,"qa-list":1};
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+id).classList.add("on");
+  const nv=SUBV[id]?"tests":id;document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===nv));window.scrollTo(0,0)}
+function qaTopics(c){const e=CLASSES[c].era,Q=window.SAVOLLAR[e]||[],Z=(window.IZOH&&window.IZOH[e])||[];
+  return (QA_EXTRA[c]||[]).concat([{id:c+"-b",title:"Kitob bo'yicha savol-javob",items:Q.map((x,i)=>({q:x.q,a:x.o[x.a]+(Z[i]?". "+Z[i]:"")}))}])}
+function steps(c){const p=prog(c),C=CLASSES[c];
+  const s1=!!p.g,s2=qaTopics(c).every(t=>p.qa.includes(t.id)),s3=!!P.best[C.era],s4=C.cert!==null&&!!P.best[C.cert];
+  return [["Qo'llanma","Avval qo'llanmani o'qing",s1,true],["Savol-javob","Mavzular bo'yicha savol-javoblar",s2,true],
+    ["Mavzulashtirilgan test","Qo'llanma asosidagi test",s3,true],["Boblashtirilgan milliy sertifikat testi",C.cert===null?"Tez orada":"Bob bo'yicha sertifikat testi",s4,true]]}
+function drawClasses(){$("cls-grid").innerHTML=Object.keys(CLASSES).map(c=>{const d=steps(c).filter(s=>s[2]).length;
+  return `<button class="class-btn" data-cls="${c}"><div><div class="num">${c}</div><div class="title">Sinf</div></div><small>${d} / 4 bosqich</small></button>`}).join("")}
+function drawClass(c){$("cl-title").textContent=c+"-sinf";
+  $("cl-steps").innerHTML=steps(c).map((s,i)=>`<button class="stp ${s[2]?"done":""} ${s[3]?"":"lock"}" data-step="${i}"><span class="n">${s[2]?"&#10003;":i+1}</span><span class="t"><b>${s[0]}</b><span>${s[3]?s[1]:"Avval oldingi bosqichni tugating"}</span></span><span>${s[3]?"&rsaquo;":"&#128274;"}</span></button>`).join("")}
+function openClass(c){curCls=c;drawClass(c);show("class")}
+function stepGo(i){const c=curCls,C=CLASSES[c],s=steps(c)[i];
+  if(!s[3]){toast("Avval oldingi bosqichni tugating.");return}
+  if(i===0)openGuide(c);else if(i===1)openQA(c);else if(i===2)startTest(C.era);
+  else if(C.cert===null)toast("Sertifikat testi tez orada qo'shiladi.");else startTest(C.cert)}
+const GUIDE={6:{
+note:"Qo'llanma darslikning besh bobi bo'yicha tuzilgan. Sanalar darslik bo'yicha berilgan.",
+bob:"V BOB. Qadimgi Rim",
+people:[
+["Romul va Rem","Rimning afsonaviy asoschilari","mil. avv. 753-yil","Rivoyatga ko'ra, ikki aka-uka chaqaloq paytida Tibr daryosi bo'yiga tashlab ketilgan, ularni ona bo'ri boqqan. Katta bo'lgach, Rim shahriga asos solishgan. Ona bo'ri tasviri Rimning timsoliga aylangan.","152"],
+["Tarkviniy (Mag'rur)","Rimning so'nggi podshosi","mil. avv. 509-yil","Saylangan hukmdorni o'ldirib hokimiyatni olgan, shafqatsizligi uchun “Mag'rur” laqabini olgan. Xalq qo'zg'olon ko'tarib uni shahardan haydagan, shundan keyin Rimda respublika o'rnatilgan.","153"],
+["Spartak","qullar qo'zg'oloni rahbari, frakiyalik qul","mil. avv. 74-71-yillar","Kapuyadagi gladiatorlik maktabidan tarafdorlari bilan qochib, Vezuviy tog'iga chiqqan. Qamal qilgan Rim qo'shinini uzum novdalaridan to'qilgan narvon orqali tushib, orqadan zarba berib yengishgan. Mil. avv. 71-yilda Krass qo'shini bilan hal qiluvchi jangda halok bo'lgan.","164"],
+["Mark Krass","Rim sarkardasi","mil. avv. I asr","Spartak qo'zg'olonini bostirgan. Keyin Pompey bilan hokimiyat uchun kurashgan va urushlardan birida halok bo'lgan.","164, 166"],
+["Pompey","Rim sarkardasi","mil. avv. I asr","Krass bilan hokimiyat uchun kurashgan. Krass halok bo'lgach, Sezarning asosiy raqibiga aylangan. Sezar Rubikondan o'tganda Pompeyning qo'shinlari Ispaniyada turgan.","166"],
+["Yuliy Sezar","Rim sarkardasi va diktatori","mil. avv. 49-44-yillar","Galliyadagi g'alabali urushdan so'ng mil. avv. 49-yilda qo'shini bilan Rubikon daryosidan o'tgan (“Qur'a tashlandi!” iborasi shu bilan bog'liq). Yakkahokim diktator bo'lib, mansabdorlarni o'zi tayinlagan. Norozi senatorlar fitnasi natijasida mil. avv. 44-yilda Senat majlisida o'ldirilgan.","166"],
+["Brut","Sezarga qarshi fitna boshlig'i","mil. avv. 44-yildan keyin","Sezarning yaqin do'sti bo'lgan, fitnaga boshchilik qilgan. Sezar o'ldirilgach respublikani tiklashga urinib qo'shin to'plagan, ammo Oktavian va Antoniy uni yengishgan.","166, 167"],
+["Oktavian Avgust","Rim imperiyasining asoschisi","mil. avv. 29-yildan","Sezarning jiyani. Antoniy bilan birga respublikachilarni yengib, keyin Antoniy va Kleopatra flotini dengiz jangida mag'lub etgan; Misr Rim provinsiyasiga aylangan. Darslikka ko'ra, mil. avv. 29-yilda imperator unvoni va Avgust nomini olgan. Rimda ko'plab saroy va ibodatxonalar qurdirgan.","167, 168"],
+["Mark Antoniy","Rim sarkardasi","mil. avv. I asr","Oktavian bilan ittifoq tuzib Rimning sharqiy qismini boshqargan. Misrda Kleopatraga uylanib, unga sharqiy provinsiyalarni bergani Oktavianning noroziligiga sabab bo'lgan. Dengiz jangida yengilgach, Kleopatra bilan Misrga qochgan va o'zini o'ldirgan.","167"],
+["Kleopatra","Misr malikasi","mil. avv. I asr","Antoniyning rafiqasi. Antoniy bilan birga yengilgan va o'zini o'ldirgan; shundan so'ng Misr Rim provinsiyasiga aylangan.","167"],
+["Kaligula va Neron","Rim imperatorlari","Avgustdan keyingi davr","Darslikka ko'ra, Avgustning vorislari bo'lgan bu ikki imperator hukmronligi davrida imperiyada inqiroz boshlangan.","168"],
+["Trayan","Rim imperatori","milodiy 98-yildan","Hukmronligida Rimning qudrati tiklangan, milodiy II asr “oltin asr” deb ataladi. Dunay bo'ylaridagi daklar bilan urush olib borgan (voqealar Trayan ustunida tasvirlangan), Suriya va Mesopotamiya imperiya tarkibiga kirgan, Parfiya bilan muvaffaqiyatli urush qilgan.","168"],
+["Konstantin","Rim imperatori","milodiy 313-330-yillar","313-yilda xristianlikni boshqa dinlar bilan teng huquqli deb e'lon qilgan; xristianlar ibodatxona qurish va ochiq ibodat qilish imkoniga ega bo'lgan. 330-yilda Bosfor bo'g'ozidagi Vizantiy shahrini yangi poytaxt qilgan, shahar keyin Konstantinopol deb atalgan.","170, 177"],
+["Feodosiy","Rim imperatori","milodiy 395-yil","Vafotidan so'ng imperiya ikki o'g'li o'rtasida G'arbiy va Sharqiy qismlarga bo'lingan.","170"],
+["Alarix","gotlar yetakchisi","milodiy 410-yil","Gotlar bilan Rimni qurshab olgan. Qullar tunda darvozani ochgach, shahar uch kun talangan.","170, 172"],
+["Attila","hunlar yetakchisi","milodiy 452-yil","Alarixdan keyin Rimning eng xavfli dushmanlaridan biri bo'lgan; hunlar uning boshchiligida imperiyaga hujum qila boshlagan.","172"],
+["Odoakr va Romul","german sarkardasi va oxirgi G'arbiy Rim imperatori","milodiy 476-yil","Rimdagi yollanma german qo'shinining sarkardasi Odoakr imperator Romulni taxtdan agdargan va imperator nishonlarini Konstantinopolga yuborgan. Shu bilan G'arbiy Rim imperiyasi tugab, o'rta asrlar boshlangan.","171, 172"],
+["Tit Liviy, Plutarx, Kvint Kursiy Ruf","Rim davri tarixchilari","-","Tit Liviy “Rim tarixi”ni, Plutarx yunon va rim sarkardalari hayoti haqidagi kitobni, Kvint Kursiy Ruf “Makedoniyalik Aleksandr tarixi”ni yozgan. Bu asarlar bizgacha yetib kelgan.","175"],
+["Iso Masih","xristianlik ta'limoti markazidagi shaxs","milodiy I asr","Rivoyatga ko'ra, Rim hokimiyati ostidagi Falastinda, Vifleyem shahrida tug'ilgan; o'n ikki shogirdi (apostollar) bilan ta'limotini yoygan. Ruhoniylar uni o'limga mahkum etgan. U haqidagi rivoyatlar “Yevangeliya” (“xushxabar”) deb nomlangan.","176, 177"],
+["Pontiy Pilat","Rim noibi","milodiy I asr","Iso uchun chiqarilgan o'lim hukmini tasdiqlagan Rim noibi.","176"]],
+tables:[
+["Adashtiriladigan shaxslar",["Shaxslar","Farqi"],[["Oktavian va Antoniy","Oktavian - Sezarning jiyani, keyin Avgust. Antoniy - sharqiy qismni boshqargan, Kleopatraning eri."],["Alarix, Attila, Odoakr","Alarix - gotlar, 410-yil. Attila - hunlar, 452-yil. Odoakr - german sarkardasi, 476-yilda Romulni taxtdan agdargan."],["Spartak va Krass","Spartak - qullar qo'zg'oloni rahbari. Krass - qo'zg'olonni bostirgan sarkarda."],["Sezar va Pompey","Sezar - Rubikondan o'tgan, 44-yilda o'ldirilgan. Pompey - Sezarning asosiy raqibi."]]],
+["Xronologiya",["Yil","Voqea"],[["mil. avv. 753","Romul va Rem Rimga asos soldi (rivoyat)"],["mil. avv. 509","Podsho ag'darildi, respublika boshlandi"],["mil. avv. 74-71","Spartak qo'zg'oloni"],["mil. avv. 49","Sezar Rubikondan o'tdi"],["mil. avv. 44","Sezar o'ldirildi"],["mil. avv. 29","Oktavian imperator unvoni va Avgust nomini oldi"],["milodiy 98","Trayan taxtga o'tirdi"],["milodiy 313","Konstantinning xristianlik haqidagi farmoni"],["milodiy 330","Konstantinopol poytaxt bo'ldi"],["milodiy 395","Imperiya ikki qismga bo'lindi"],["milodiy 410","Gotlar Rimni talagan"],["milodiy 476","Odoakr Romulni agdardi, G'arbiy Rim tugadi"]]],
+["Rim ma'budlari",["Ma'bud","Nimaning ma'budi"],[["Yupiter","bosh ma'bud"],["Neptun","dengiz"],["Mars","urush"],["Vesta","xonadon o'chog'i"],["Diana","ov"],["Vulqon","olov va temirchilik"],["Merkuriy","savdo"]]]]}};
+GUIDE[6].bobs={
+I:[["Gerodot","yunon tarixchisi, “tarixning otasi”","mil. avv. V asr","“Tarix” asarini yozgan; u yunon-fors urushlariga bag'ishlangan va O'rta Osiyo haqida ham ma'lumot beradi. Perikl bilan do'st bo'lgan.","9, 98, 110, 114, 118"],
+["Strabon","yunon tarixchisi va geografi","mil. avv. I asr oxiri","“Geografiya” asarida ko'plab mamlakat va xalqlar haqida ma'lumot bergan; qadimgi dunyoni o'rganishda yozma manba.","9"],
+["Arrian","yunon tarixchisi","milodiy II asr","Aleksandrning O'rta Osiyodagi yurishlarini yozgan; Xorazmda Farasman podsholik qilganini ham xabar qilgan.","9, 127, 132"]],
+II:[["Menes","Misrning birinchi fir'avni","mil. avv. 3000-yil","Yuqori va Quyi Misrni birlashtirib, yagona davlat tuzgan; poytaxti Memfis.","31"],
+["Yaxmos","Yangi podsholik asoschisi","Yangi podsholik boshi","Fiva hukmdori; giksoslarni Misrdan haydab, yangi sulola va Yangi podsholik davrini boshlagan.","33"],
+["Tutmos II","Yangi podsholik fir'avni","Yangi podsholik","Davrida Falastin, Finikiya va Suriyani bosib olish boshlangan.","33"],
+["Tutmos III","Yangi podsholik fir'avni","Yangi podsholik","Yurishlarni davom ettirib, Old Osiyoda misrliklar hukmronligini o'rnatgan.","33"],
+["Kambiz II","fors shohi, Kir II ning o'g'li","mil. avv. 525-yil","Misrni bosib olib, Fors davlati hududini juda kengaytirgan.","33, 55"],
+["Xufu, Xafra va Menkaura","piramidalar quruvchi fir'avnlar","Qadimgi podsholik","Memfis yaqinidagi piramidalari jahonning yetti mo''jizasidan biri. Eng kattasi Xufuniki: mil. avv. 2600-yil atrofida qurilgan, balandligi 147 m.","36, 37"],
+["Tutanxamon","Yangi podsholik fir'avni","Yangi podsholik","Maqbarasi boyliklari bilan bizgacha yetib kelgan: oltin niqob, toshtobut va boshqa buyumlar topilgan.","26, 38, 39"],
+["Shampolyon","fransuz olimi","1822-yil","Rozett bitiktoshi yordamida qadimiy Misr yozuvini o'qishga muvaffaq bo'lgan.","41"],
+["Gilgamish","Uruk podshosi, afsonaviy qahramon","Shumer davri","Mesopotamiya rivoyatlarining sevimli qahramoni; do'sti Enkidu bilan boqiylik giyohini izlagan, ammo uni ilon olib ketgan.","46"],
+["Sargon I","Akkad podshosi","mil. avv. 3-mingyillikning 2-yarmi","Akkad va Shumer shaharlarini birlashtirgan, yagona o'lchov joriy etgan, 5400 kishilik muntazam qo'shin tuzgan.","47"],
+["Xammurapi","Bobil podshosi, qonunlar tuzuvchi","mil. avv. 1792-1750-yillar","Mesopotamiyani birlashtirgan. Qonunlari tosh ustunlarga yozilgan va juda qattiqqo'l bo'lgan.","48, 49, 50"],
+["Navuxodonosor II","Yangi Bobil podshosi","Yangi Bobil davri","Davrida Yangi Bobil kuchining cho'qqisiga chiqqan. Iyerusalimni vayron qilgan, Bobilni mustahkamlagan; Ishtar darvozasi shu davrda qurilgan.","50, 51"],
+["Ashshurbanipal","Ossuriya hukmdori","Ossuriya davri","Poytaxti Nineviyada sopol taxtachalardan iborat yirik kutubxona to'plagan.","52"],
+["Kiaksar","Midiya podshosi","mil. avv. VII asr","Midiyani qudratli davlatga aylantirgan; Bobil bilan ittifoq tuzib, Ossuriyani bosib olgan.","55"],
+["Kir II","Ahamoniylardan fors shohi","mil. avv. 558-530-yillar","Forslarni birlashtirib, Midiya, Bobil (539), Falastin va Finikiyani, O'rta Osiyoning bir qismini bo'ysundirgan. Massagetlarga qarshi jangda halok bo'lgan.","33, 55, 114, 123"],
+["Doro I","Ahamoniylar shohi","mil. avv. 522-yildan","Qo'zg'olonlarni bostirgan, davlatni satrapiyalarga bo'lgan, “darik” tangasi va “shoh yo'li”ni joriy etgan. Behistun yozuvi uning buyrug'i bilan yozilgan.","9, 56, 57, 99, 114, 115, 117"],
+["Budda","buddaviylik asoschisi","mil. avv. VI asr","Shahzoda bo'lgan; inson azobini ko'rgach saroyni tark etgan. Ta'limotiga ko'ra, istaklar azobga olib keladi.","64, 65"],
+["Sin Shixuandi","Xitoyni birlashtirgan hukmdor","mil. avv. 246-yil (darslik bo'yicha)","Xitoyni birlashtirib viloyatlarga bo'lgan; Buyuk Xitoy devorini mustahkamlashni buyurgan. Maqbarasidan 6 mingta sopol askar haykali topilgan.","69, 70"],
+["Zardusht","zardushtiylik targ'ibotchisi","mil. avv. 1-mingyillik boshi","Ahuramazda uni yangi ta'limotni yoyishga tanlagan, deyiladi. Va'zlari “Avesto”da jamlangan.","81, 82"],
+["Ktesiy","yunon tarixchisi, saroy tabibi","mil. avv. V-IV asrlar","Fors saroyida uzoq yashagan; Baqtriya, Nin va Oksiart haqida hikoya qilgan.","79"]],
+III:[["Minos","afsonaviy Krit podshosi","mil. avv. 2-mingyillik","Minoy sivilizatsiyasi uning nomi bilan atalgan; rivoyatga ko'ra, Dedal unga Labirint qurgan.","86, 108"],
+["Drakont","Afina qonunchisi","mil. avv. 621-yil","Qonunlari shu qadar qattiq ediki, har qanday buzilishga o'lim jazosi berilgan: “qon bilan yozilgan qonunlar”.","96"],
+["Solon","Afina hukmdori, islohotchi","mil. avv. 594-yil","Qarzdorni qul qilishni bekor qilgan, Xalq majlisini tiklagan, aristokratiyani demokratiyaga almashtirgan.","97"],
+["Perikl","Afina strategi","mil. avv. 443-429-yillar","Davrida Afina eng qudratli bo'lgan, demokratiya gullagan (“Perikl asri”). Akropolda Parfenon qurilishini boshlagan.","98"],
+["Fidiy","yunon haykaltaroshi","Perikl zamoni","Perikl do'sti; Parfenon qurilishiga boshchilik qilgan.","98, 108"],
+["Kserks","fors shohi, Doro I ning o'g'li","mil. avv. 480-yil","Yunonistonga yurish qilgan; Fermopilda g'alaba qozongan, ammo Salamin dengiz jangida yengilib, chekinishga majbur bo'lgan.","57, 99, 117"],
+["Leonid","Sparta podshosi","mil. avv. 480-yil","Fermopil darasini qahramonlarcha himoya qilib, “uch yuz spartalik” bilan halok bo'lgan.","99"],
+["Filipp II","Makedoniya podshosi","mil. avv. 336-yilda vafot etgan","338-yilda Xeroniyada yunonlarni yengib, Korinf ittifoqini tuzgan. Forslarga yurishdan oldin o'ldirilgan; taxtga o'g'li Aleksandr o'tgan.","100, 101, 102, 122"],
+["Demosfen","yunon notig'i","Filipp II davri","Yunon shaharlarini makedonlarga qarshi birlashishga chaqirgan.","100"],
+["Makedoniyalik Aleksandr","Makedoniya podshosi, sarkarda","mil. avv. 336-323-yillar","334-yilda Sharqqa yurish boshlagan; 330-yilda Doro III ni yengib, Fors davlatini bosib olgan. O'rta Osiyoda Spitaman qo'zg'olonini bostirgan, Roksanaga uylangan. 323-yilda vafot etgan, davlati bo'linib ketgan.","102, 109, 122, 123, 124, 127, 128"],
+["Gomer","qadimgi yunon shoiri","Troya urushidan keyingi davr","“Iliada” va “Odisseya” dostonlari muallifi.","105"],
+["Paris, Yelena, Odissey, Axilles","Troya urushi qahramonlari","taxminan mil. avv. 1200-yil","Paris Yelenani Troyaga olib ketgan; Odissey maslahati bilan yunonlar yog'och ot yasab Troyani olgan. Axilles tovoniga o'q tegib halok bo'lgan.","105, 106"],
+["Sofokl","tragediyalar muallifi","-","“Shoh Edip” va “Antigona” tragediyalarini yozgan.","107"],
+["Aristofan","komediyalar muallifi","-","Qadimgi Yunonistonning eng mashhur komediyanavisi.","107"],
+["Geraklit","yunon faylasufi","-","Hamma narsa olovdan kelib chiqqan va doim o'zgaradi, degan.","109"],
+["Demokrit","frakiyalik faylasuf","-","Hamma narsa ko'rinmas mayda zarralar, ya'ni atomlardan iborat, degan fikrni aytgan.","109"],
+["Diogen","yunon faylasufi","-","Insonda ehtiyoj bo'lmasligi kerak, deb o'rgatgan; bochkada yashagan. Aleksandrga “Quyoshni to'sma” degani rivoyat qilinadi.","109"],
+["Arximed","fizik va matematik","-","Richag qonunini ishlab chiqqan; “Evrika!” iborasi unga tegishli.","110"],
+["Gerakl, Dedal va titanlar","afsonaviy shaxslar","-","Gerakl o'n ikki jasorati bilan Olimpda o'rin olgan. Dedal Labirintni qurgan usta; Atlant osmon gumbazini yelkasida ushlab turgan titan.","104, 108, 111, 113"]],
+IV:[["To'maris","massagetlar malikasi","mil. avv. 530-yil","Kir II qo'shiniga qarshi jangda g'alaba qozongan; Kir halok bo'lgan.","114"],
+["Frada","Marg'iyona qo'zg'oloni rahbari","mil. avv. 522-yil","Doro I ga qarshi qo'zg'olonga boshchilik qilgan; yengilib, asirga olingan va qatl etilgan.","114, 115, 116"],
+["Dadarshish","Baqtriya satrapi","mil. avv. 522-yil","Doro I buyrug'i bilan Marg'iyonaga borib, qo'zg'olonchilarni yengdi.","115"],
+["Shiroq va Poliyen","sak cho'poni va rivoyatni keltirgan tarixchi","mil. avv. VI asr; Poliyen: mil. avv. II asr","Poliyenga ko'ra, Shiroq Doro I qo'shinini suvsiz sahroga boshlab borib, saklarni qutqargan.","115, 116"],
+["Doro III","Ahamoniylarning oxirgi shohi","mil. avv. 330-yil","Aleksandr uning qo'shinini tor-mor etgan.","123"],
+["Bess","Baqtriya satrapi","Aleksandr yurishi davri","Aleksandr yaqinlashganda Baqtrani tashlab, Amudaryo ortiga qochgan.","123"],
+["Spitaman","sug'diylar qo'zg'olonining lashkarboshisi","mil. avv. 329-328-yillar","Maroqandani qamal qilgan, Zarafshon bo'yida makedonlar guruhini qirgan; yengilgach, ko'chmanchilar tomonidan o'ldirilgan. Qizi Apama Salavkning rafiqasi.","123, 124, 125, 129"],
+["Oksiart, Xoriyen va Roksana","sug'd zodagonlari","Aleksandr yurishi davri","Aleksandr ularning tog' qal'alarini olgach, Oksiartning qizi Roksanaga uylangan.","124, 127"],
+["Krater va Karan","Aleksandr qo'mondonlari","mil. avv. 329-yil","Karan Zarafshon pistirmasida muvaffaqiyatsizlikka uchragan; Krater Maroqanda yonida toshotar qurollarni ishlatgan.","125, 126"],
+["Salavk","Salavkiylar davlati asoschisi","mil. avv. 312-yildan","Aleksandr lashkarboshisi; Bobil hukmdori bo'lib, Salavkiylar davlatini tuzgan. Rafiqasi Apama, o'g'li Antiox.","128, 129"],
+["Antiox","Salavkning o'g'li, hukmdor","mil. avv. 280-yildan","Otasi uni Sharqiy viloyatlar noibi qilgan, keyin davlatni 20 yilcha boshqargan. Marvdagi Antioxiya shahri uning nomi bilan bog'liq.","128, 129"],
+["Apama","Salavk rafiqasi, Spitaman qizi","Salavk davri","Mashhur malika; Apameya shahri uning sharafiga nomlangan.","129"],
+["Diodot","Yunon-Baqtriya asoschisi","mil. avv. 250-yil","Baqtriyani Salavkiylardan ajratib, o'zini podsho deb e'lon qilgan.","129, 130"],
+["Yevtidem","Yunon-Baqtriya podshosi","Yunon-Baqtriya davri","Diodotdan keyin hukmronlik qilgan; o'g'li Demetriy.","130"],
+["Demetriy","Yunon-Baqtriya podshosi","Yunon-Baqtriya davri","Davrida davlat eng katta hududga ega bo'lgan, Hindistonning bir qismi qo'shib olingan.","130"],
+["Mitridat I","Parfiya hukmdori","Yunon-Baqtriya oxirlari","Baqtriyaga bosimni kuchaytirgan; bu Yunon-Baqtriyaning zaiflashuviga olib kelgan.","130"],
+["Farasman","Xorazm podshosi","mil. avv. IV asr","Arrian yozishicha, Aleksandr davrida mustaqil Xorazmni boshqargan.","132"],
+["Kudzula Kadfiz","birinchi kushon hukmdori","milodiy I asr","Yuechji qabilalarini birlashtirgan; davrida Afg'oniston va Kashmir Kushon davlatiga qo'shilgan.","143"],
+["Vima Kadfiz","Kushon podshosi","Kushon davri","Davlatni yanada kengaytirgan; o'z nomi bitilgan tanga zarb qilib, pul islohotini o'tkazgan.","143, 144"],
+["Kanishka","Kushon podshosi","Kushon davri","Davrida Kushon davlati ulkan imperiyaga aylanib gullagan; Hindiston, Xitoy va Rim bilan savdo-elchilik aloqalari yo'lga qo'yilgan.","143, 144, 145"],
+["Chjan Szyan","Xitoy elchisi","mil. avv. II asr","Hunlarga qarshi ittifoqchi izlab yo'lga chiqqan; Farg'onaga kelgan. Uning yo'li Buyuk ipak yo'liga asos bo'lgan.","139, 149"],
+["U-Di va Che Lin","Xitoy imperatori va pahlavoni","Ipak yo'li shakllangan davr","U-Di Farg'ona otlarini xohlagan; Che Lin elchi bo'lib borgan, rad javobi “samoviy otlar” uchun urushga sabab bo'lgan.","140, 149"],
+["Ferdinand Rixtgofen","nemis geografi","1877-yil","Xitoyni G'arb bilan bog'lovchi yo'lni “Ipak yo'li” deb atagan.","148, 149"],
+["F. Berton va O. Dalton","Amudaryo xazinasi bilan bog'liq inglizlar","1880-1905-yillar","Berton 1880-yilda qaroqchilar olib ketgan oltin buyumlarni qaytarib olgan; Dalton 1905-yilda “Oks xazinasi” kitobini yozgan.","121"]],
+V:GUIDE[6].people};
+GUIDE[6].names={I:"I BOB. Eng qadimgi tuzumdan sivilizatsiya sari",II:"II BOB. Qadimgi Sharq va O'rta Osiyo",III:"III BOB. Qadimgi Yunoniston",IV:"IV BOB. Mil. avv. VI - mil. III asrlarda O'rta Osiyo",V:"V BOB. Qadimgi Rim"};
+let gb="I";
+function drawGuide(c,t){const G=GUIDE[c];const L=t?Object.keys(G.bobs).flatMap(k=>G.bobs[k]):G.bobs[gb];const P=L.filter(x=>!t||(x[0]+" "+x[1]+" "+x[3]).toLowerCase().includes(t));
+  let h=P.map(x=>`<div class="card pc"><h3>${esc(x[0])}</h3><div class="m">${esc(x[1])} | ${esc(x[2])}</div><p>${esc(x[3])}</p><small>Kitobda: ${esc(x[4])}-bet</small></div>`).join("")||'<p class="note">Hech narsa topilmadi.</p>';
+  if(!t&&gb==="V")h+=G.tables.map(b=>`<h2>${esc(b[0])}</h2><div class="tw"><table class="tbl"><tr>${b[1].map(x=>`<th>${esc(x)}</th>`).join("")}</tr>${b[2].map(r=>`<tr>${r.map(x=>`<td>${esc(x)}</td>`).join("")}</tr>`).join("")}</table></div>`).join("");
+  $("g-list").innerHTML=h}
+function drawChips(c){const G=GUIDE[c];$("g-chips").innerHTML=Object.keys(G.bobs).map(k=>`<button class="chip ${k===gb?"on":""}" data-gb="${k}">${k} bob</button>`).join("");$("g-bob").textContent=G.names[gb]}
+function openGuide(c){const G=GUIDE[c];$("g-title").textContent=c+"-sinf qo'llanma";
+  if(G){$("g-body").innerHTML=`<p class="sub" style="margin-top:6px">${esc(G.note)}</p><div class="chips" id="g-chips"></div><h2 id="g-bob"></h2><input class="search" id="g-q" placeholder="Shaxs bo'yicha qidirish (hamma boblardan)" aria-label="Qidirish"><div id="g-list"></div>`;
+    $("g-q").oninput=e=>drawGuide(c,e.target.value.trim().toLowerCase());drawChips(c);drawGuide(c,"")}
+  else{const Z=(window.IZOH&&window.IZOH[CLASSES[c].era])||[];$("g-body").innerHTML=Z.length?Z.map(t=>`<p class="gp">${esc(t)}</p>`).join(""):'<p class="note">Qo\'llanma matni hali qo\'shilmagan.</p>'}
+  $("g-done").onclick=()=>{prog(c).g=1;save();refresh();toast("Qo'llanma tugadi. Endi savol-javobga o'ting.");show("class")};show("guide")}
+function openQA(c){curTopics=qaTopics(c);$("qt-title").textContent=c+"-sinf savol-javob";
+  $("qt-list").innerHTML=curTopics.map((t,i)=>`<button class="row-card" data-topic="${i}"><span>${esc(t.title)}</span><small>${prog(c).qa.includes(t.id)?"&#10003; ":""}${t.items.length} savol</small></button>`).join("");show("qa-topics")}
+function openTopic(i){const t=curTopics[i],p=prog(curCls);if(!p.qa.includes(t.id)){p.qa.push(t.id);save();refresh()}
+  $("ql-title").textContent=t.title;
+  $("ql-cards").innerHTML=t.items.map(x=>`<div class="qa-card"><div class="qa-header"><span class="qa-q">${esc(x.q)}</span><svg class="qa-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="qa-body">${esc(x.a)}</div></div>`).join("");show("qa-list")}
 
 let tm;function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>el.classList.remove("show"),2400)}
 
 document.addEventListener("click",e=>{
 const eraBtn=e.target.closest("[data-era]");if(eraBtn){startTest(parseInt(eraBtn.dataset.era));return;}
 const s=e.target.closest("[data-soon]");if(s){toast(s.dataset.soon+" bo'limi tez orada qo'shiladi.");return}
-const c=e.target.closest("[data-cat]");if(c){cat=c.dataset.cat;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));drawTests();return}
-const g=e.target.closest("[data-go]");if(g){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+g.dataset.go).classList.add("on");
-document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===g.dataset.go));window.scrollTo(0,0)}});
-store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}refresh()});
+const gc=e.target.closest("[data-gb]");if(gc){gb=gc.dataset.gb;$("g-q").value="";drawChips(curCls);drawGuide(curCls,"");window.scrollTo(0,0);return}
+const cb=e.target.closest("[data-cls]");if(cb){openClass(cb.dataset.cls);return}
+const sb=e.target.closest("[data-step]");if(sb){stepGo(+sb.dataset.step);return}
+const tb=e.target.closest("[data-topic]");if(tb){openTopic(+tb.dataset.topic);return}
+const qh=e.target.closest(".qa-header");if(qh){qh.parentElement.classList.toggle("open");return}
+const bk=e.target.closest("[data-back]");if(bk){show(bk.dataset.back);return}
+const g=e.target.closest("[data-go]");if(g){show(g.dataset.go);return}});
+window.CLASSES_READY=true;
+store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh()});
 </script>
 </body>
 </html>
