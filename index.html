@@ -366,6 +366,19 @@ const QA_EXTRA={6:[
 
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#0A1230");tg.setBackgroundColor("#0A1230")}catch(e){}}
+/* activeEra dan mavzu nomini olish (AI tahlil uchun) */
+function mvTitleOf(era){
+  try{
+    const s=String(era);
+    const m=/^(\d+[ju])m(\d+)$/.exec(s);
+    if(m&&window.MAVZU711&&MAVZU711[m[1]]&&MAVZU711[m[1]].groups&&MAVZU711[m[1]].groups[+m[2]])return MAVZU711[m[1]].groups[+m[2]].title;
+    const m6=/^6m(\d+)$/.exec(s);
+    if(m6&&window.MAVZU_TEST&&MAVZU_TEST.groups&&MAVZU_TEST.groups[+m6[1]])return MAVZU_TEST.groups[+m6[1]].title;
+    if(/A$/.test(s))return "Aralash test";
+    if(s==="0")return "6-sinf asosiy test";
+  }catch(e){}
+  return "";
+}
 const $=id=>document.getElementById(id), gl=n=>`<svg class="gl" viewBox="0 0 24 24"><use href="#g-${n}"/></svg>`;
 const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
 if(u){$("hello").textContent="Salom, "+u.first_name+"!";$("uname").textContent=u.first_name;$("av").textContent=u.first_name.charAt(0).toUpperCase()}
@@ -655,6 +668,7 @@ function showResults(){
       <div style="display:grid;gap:10px;margin-top:20px">
         ${wrongList.length ? `<button id="r-wrong" class="go" style="text-align:center">Faqat xatolarni qayta ishlash (${wrongList.length})</button>` : ""}
         <button id="r-again" class="go" style="text-align:center">Testni qaytadan boshlash</button>
+        ${(tg&&tg.sendData)?`<button id="r-ai" style="padding:12px;background:rgba(47,208,160,.15);border:1px solid #2FD0A0;border-radius:10px;text-align:center;color:#2FD0A0">🧠 AI tahlil olish</button>`:""}
         <button id="r-close" style="padding:12px;background:rgba(255,255,255,.1);border-radius:10px;text-align:center">Yopish</button>
       </div>
     </div>`;
@@ -664,6 +678,18 @@ function showResults(){
   const rw=modal.querySelector("#r-wrong"); if(rw) rw.onclick=()=>startTest(activeEra, wl);
   modal.querySelector("#r-again").onclick=()=>startTest(activeEra);
   modal.querySelector("#r-close").onclick=()=>modal.remove();
+  /* AI tahlil: natija botga yuboriladi, bot tahlil qaytaradi */
+  const rai=modal.querySelector("#r-ai");
+  if(rai) rai.onclick=()=>{
+    try{
+      const payload={
+        era:String(activeEra), cls:(curCls!=null?String(curCls):""),
+        mv:mvTitleOf(activeEra), sc:score, tot:total,
+        w:wrongList.map(x=>{const q=all[x.idx];return {q:q?q.q:"",s:x.sel}})
+      };
+      tg.sendData(JSON.stringify({t:"testnatija",d:payload}));
+    }catch(e){toast("Yuborib bo'lmadi.")}
+  };
 }
 
 /* Sinflar: qo'llanma -> savol-javob -> mavzulashtirilgan test -> sertifikat testi */
