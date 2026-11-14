@@ -947,9 +947,10 @@ function openVariant(id){
   avV=v;avSel=v.questions.map(()=>-1);avDone=false;
   const keyed=!!v.a&&v.a.length===v.questions.length;
   $("av-title").textContent=attTitle(v);
+  const openN=v.questions.filter(q=>!q.o||!q.o.length).length;
   $("av-sub").textContent=keyed
     ? `${v.questions.length} savol · javobni tanlang va tekshiring`
-    : `${v.questions.length} savol · Milliy sertifikat namunasi`+(v.questions.length>=45?"":" · qisman yuklangan");
+    : (openN?`${v.questions.length} savol · Milliy sertifikat namunasi · ${v.questions.length-openN} ta test savoli belgilanadi, ${openN} ta ochiq (yozma)`:`${v.questions.length} savol · Milliy sertifikat namunasi`+(v.questions.length>=45?"":" · qisman yuklangan"));
   renderAttView(keyed);
   show("att-view");
   window.scrollTo(0,0);
@@ -960,7 +961,7 @@ function renderAttView(keyed){
     <div class="qi">
       <div class="n">${i+1}-savol</div>
       <div class="qt">${esc(q.t)}</div>
-      <div class="qo">${q.o.map((o,oi)=>{
+      <div class="qo">${(!q.o||q.o.length===0)?`<div class="open">&#9997;&#65039; Ochiq savol — javobni yozing (avtomatik tekshirilmaydi)</div>`:q.o.map((o,oi)=>{
         const right=keyed&&avDone&&v.a[i]===oi;
         const wrong=keyed&&avDone&&avSel[i]===oi&&v.a[i]!==oi;
         const sel=!avDone&&avSel[i]===oi;
