@@ -682,13 +682,25 @@ function showResults(){
   const rai=modal.querySelector("#r-ai");
   if(rai) rai.onclick=()=>{
     try{
-      const payload={
-        era:String(activeEra), cls:(curCls!=null?String(curCls):""),
-        mv:mvTitleOf(activeEra), sc:score, tot:total,
-        w:wrongList.map(x=>{const q=all[x.idx];return {q:q?q.q:"",s:x.sel}})
-      };
-      tg.sendData(JSON.stringify({t:"testnatija",d:payload}));
-    }catch(e){toast("Yuborib bo'lmadi.")}
+      const bl=s=>{try{return new TextEncoder().encode(s).length}catch(e){return s.length*2}};
+      let items=wrongList.map(x=>{const q=all[x.idx];return {q:q?q.q:"",s:x.sel}});
+      let payload={t:"testnatija",d:{era:String(activeEra),cls:(curCls!=null?String(curCls):""),mv:mvTitleOf(activeEra),sc:score,tot:total,w:items}};
+      let s=JSON.stringify(payload);
+      /* Telegram sendData limiti 4096 bayt — limitdan oshmaslik uchun qisqartiramiz */
+      if(bl(s)>3800){
+        items=items.map(x=>({q:x.q.slice(0,180),s:x.s}));
+        payload.d.w=items; s=JSON.stringify(payload);
+      }
+      while(bl(s)>3800&&items.length>3){
+        items=items.slice(0,Math.max(3,Math.floor(items.length*0.6)));
+        payload.d.w=items; s=JSON.stringify(payload);
+      }
+      if(bl(s)>3800){
+        items=items.map(x=>({q:x.q.slice(0,60),s:x.s}));
+        payload.d.w=items; s=JSON.stringify(payload);
+      }
+      tg.sendData(s);
+    }catch(e){toast("Yuborib bo'lmadi. Ilovani bot tugmasi orqali ochib ko'ring.")}
   };
 }
 
