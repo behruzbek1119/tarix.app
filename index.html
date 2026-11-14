@@ -223,7 +223,7 @@ nav button{font-size:12px}
 
 <section class="view" id="v-att">
   <h2 style="margin-top:22px">Attestatsiya</h2>
-  <p class="sub">Milliy sertifikat namunasidagi variant testlar. Bo'lim o'qituvchilar uchun.</p>
+  <p class="sub">Ikki tanlov: aralash attestatsiya yoki har bir sinf yuzasidan. Bo'lim o'qituvchilar uchun.</p>
   <div class="att-note">📋 Variantlarda savollar raqam bilan berilgan. ✓ belgisi bor variantlarda to'g'ri javobni tanlab <b>Tekshirish</b> tugmasini bosing — natija va xato savollar avtomatik ko'rsatiladi.</div>
   <div class="class-grid" id="att-grid"><div class="load">Variantlar yuklanmoqda...</div></div>
 </section>
@@ -403,7 +403,7 @@ function ensureData(file,check){
   if(DLLOADER[file])return DLLOADER[file];
   DLLOADER[file]=new Promise((res,rej)=>{
     const s=document.createElement("script");
-    s.src=file+(file.indexOf("?")<0?"?v=2":"");
+    s.src=file+(file.indexOf("?")<0?"?v=3":"");
     s.onload=()=>check()?res():rej(new Error(file));
     s.onerror=()=>rej(new Error(file));
     document.head.appendChild(s)});
@@ -908,27 +908,45 @@ function openTopic(i){const t=curTopics[i],p=prog(curCls);if(!p.qa.includes(t.id
   $("ql-title").textContent=t.title;
   $("ql-cards").innerHTML=t.items.map(x=>`<div class="qa-card"><div class="qa-header"><span class="qa-q">${esc(x.q)}</span><svg class="qa-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div><div class="qa-body">${esc(x.a)}</div></div>`).join("");show("qa-list")}
 
-/* ===== Attestatsiya: variantlar ro'yxati va interaktiv tekshiruv (attestatsiya.js keyin yuklanadi) ===== */
+/* ===== Attestatsiya: 2 ta tanlov -> variantlar ro'yxati va interaktiv tekshiruv ===== */
+function attTitle(v){
+  if(v.label)return (v.n!==""&&v.n!=null)?(v.label+" "+v.n):v.label;
+  return (v.n!==""&&v.n!=null)?v.n+"-variant":"Variant";
+}
 function openAtt(){
-  $("att-grid").innerHTML='<div class="load">Variantlar yuklanmoqda...</div>';
+  $("att-grid").innerHTML='<div class="load">Bo\'limlar yuklanmoqda...</div>';
   show("att");
-  ensureData("attestatsiya.js",()=>!!(window.VARIANTLAR&&window.VARIANTLAR.length))
+  ensureData("attestatsiya.js",()=>!!(window.ATT&&window.ATT.groups&&window.ATT.groups.length))
     .then(()=>{
-      $("att-grid").innerHTML=window.VARIANTLAR.map(v=>{
-        const keyed=!!v.a&&v.a.length===v.questions.length;
-        const full=v.questions.length>=45;
-        const title=v.label?(v.label+" "+v.n):(v.n+"-variant");
-        return `<button class="class-btn" data-att="${esc(v.id!==undefined?v.id:v.n)}"><div><div class="num">${v.n}</div><div class="title">${esc(title)}</div></div><small>${keyed?"✓ ":""}${v.questions.length} savol${keyed?" · tekshiruvli":(full?"":" · qisman")}</small></button>`}).join("");
+      $("att-grid").innerHTML=window.ATT.groups.map(g=>{
+        const tot=g.variants.reduce((s,v)=>s+v.questions.length,0);
+        const keyed=g.variants.filter(v=>v.a).length;
+        const icon=g.id==="aralash"?"📋":"📚";
+        return `<button class="class-btn" data-attg="${esc(g.id)}"><div><div class="num">${icon}</div><div class="title">${esc(g.title)}</div></div><small>${g.variants.length} variant · ${tot} savol${keyed?` · ${keyed} tekshiruvli`:""}</small></button>`}).join("");
     })
     .catch(()=>{$("att-grid").innerHTML='<p class="note">Variantlar fayli yuklanmadi. Internetni tekshiring va qayta kirib ko\'ring.</p>'});
 }
+function openAttGroup(gid){
+  const g=((window.ATT&&window.ATT.groups)||[]).find(x=>x.id===gid);
+  if(!g){toast("Bo'lim topilmadi.");return}
+  $("att-grid").innerHTML=`<button class="back-btn" data-attg="" style="grid-column:1/-1;margin-bottom:8px">&larr; Tanlovga qaytish</button>`+g.variants.map(v=>{
+    const keyed=!!v.a&&v.a.length===v.questions.length;
+    const full=v.questions.length>=45;
+    return `<button class="class-btn" data-att="${esc(v.id!==undefined?v.id:v.n)}"><div><div class="num">${v.n||"★"}</div><div class="title">${esc(attTitle(v))}</div></div><small>${keyed?"✓ ":""}${v.questions.length} savol${keyed?" · tekshiruvli":(full?"":" · qisman")}</small></button>`}).join("");
+  window.scrollTo(0,0);
+}
+function findAttVar(id){
+  const gs=(window.ATT&&window.ATT.groups)||[];
+  for(const g of gs){const x=g.variants.find(y=>String(y.id!==undefined?y.id:y.n)===String(id));if(x)return x}
+  return null;
+}
 let avSel=null,avV=null,avDone=false;
 function openVariant(id){
-  const v=(window.VARIANTLAR||[]).find(x=>String(x.id!==undefined?x.id:x.n)===String(id));
+  const v=findAttVar(id);
   if(!v){toast("Variant topilmadi.");return}
   avV=v;avSel=v.questions.map(()=>-1);avDone=false;
   const keyed=!!v.a&&v.a.length===v.questions.length;
-  $("av-title").textContent=v.label?(v.label+" "+v.n):(v.n+"-variant");
+  $("av-title").textContent=attTitle(v);
   $("av-sub").textContent=keyed
     ? `${v.questions.length} savol · javobni tanlang va tekshiring`
     : `${v.questions.length} savol · Milliy sertifikat namunasi`+(v.questions.length>=45?"":" · qisman yuklangan");
@@ -979,6 +997,7 @@ const cb=e.target.closest("[data-cls]");if(cb){openClass(cb.dataset.cls);return}
 const sb=e.target.closest("[data-step]");if(sb){stepGo(+sb.dataset.step);return}
 const tb=e.target.closest("[data-topic]");if(tb){openTopic(+tb.dataset.topic);return}
 const av=e.target.closest("[data-att]");if(av){openVariant(av.dataset.att);return}
+const ag=e.target.closest("[data-attg]");if(ag){ag.dataset.attg?openAttGroup(ag.dataset.attg):openAtt();return}
 const qo=e.target.closest("[data-qi]");if(qo){
   if(avDone||!avV||!avV.a)return;
   avSel[+qo.dataset.qi]=+qo.dataset.oi;haptic("tap");
