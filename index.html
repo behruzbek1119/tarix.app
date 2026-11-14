@@ -961,9 +961,8 @@ function renderAttView(keyed){
       <div class="n">${i+1}-savol</div>
       <div class="qt">${esc(q.t)}</div>
       <div class="qo">${q.o.map((o,oi)=>{
-        if(!keyed)return `<div><b>${"ABCD"[oi]}</b>${esc(o)}</div>`;
-        const right=avDone&&v.a[i]===oi;
-        const wrong=avDone&&avSel[i]===oi&&v.a[i]!==oi;
+        const right=keyed&&avDone&&v.a[i]===oi;
+        const wrong=keyed&&avDone&&avSel[i]===oi&&v.a[i]!==oi;
         const sel=!avDone&&avSel[i]===oi;
         const cls="qopt"+(right?" right":wrong?" wrong":sel?" sel":"");
         return `<button type="button" class="${cls}" data-qi="${i}" data-oi="${oi}"${avDone?" disabled":""}><b>${"ABCD"[oi]}</b>${esc(o)}</button>`}).join("")}</div>
@@ -999,7 +998,7 @@ const tb=e.target.closest("[data-topic]");if(tb){openTopic(+tb.dataset.topic);re
 const av=e.target.closest("[data-att]");if(av){openVariant(av.dataset.att);return}
 const ag=e.target.closest("[data-attg]");if(ag){ag.dataset.attg?openAttGroup(ag.dataset.attg):openAtt();return}
 const qo=e.target.closest("[data-qi]");if(qo){
-  if(avDone||!avV||!avV.a)return;
+  if(avDone||!avV)return;
   avSel[+qo.dataset.qi]=+qo.dataset.oi;haptic("tap");
   qo.parentElement.querySelectorAll(".qopt").forEach(b=>b.classList.toggle("sel",b===qo));
   return}
