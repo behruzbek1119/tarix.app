@@ -110,7 +110,7 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 .att-note{margin-top:14px;padding:12px 14px;border:1px dashed var(--gold);border-radius:14px;color:var(--gold);font-size:13.5px;line-height:1.55}
 .qi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
 .qi .n{color:var(--gold);font:700 13px var(--serif)}
-.qi .qt{margin:6px 0 8px;line-height:1.5;font-size:15px}
+.qi .qt{margin:6px 0 8px;line-height:1.5;font-size:15px;white-space:pre-wrap}
 .qi .qo{display:grid;gap:6px}
 .qi .qo div{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04);font-size:14px;line-height:1.45}
 .qi .qo b{color:var(--tile);margin-right:6px}
@@ -978,8 +978,8 @@ function renderAttView(keyed){
         const wrong=keyed&&avDone&&avSel[i]===oi&&v.a[i]!==oi;
         const sel=!avDone&&avSel[i]===oi;
         const cls="qopt"+(right?" right":wrong?" wrong":sel?" sel":"");
-        return `<button type="button" class="${cls}" data-qi="${i}" data-oi="${oi}"${avDone?" disabled":""}><b>${"ABCD"[oi]}</b>${esc(o)}</button>`}).join("")}</div>
-      ${keyed&&avDone&&avSel[i]!==-1&&v.a[i]!==avSel[i]?`<div class="ans-right">To'g'ri javob: <b>${"ABCD"[v.a[i]]}</b>) ${esc(q.o[v.a[i]]||"")}</div>`:""}
+        return `<button type="button" class="${cls}" data-qi="${i}" data-oi="${oi}"${avDone?" disabled":""}><b>${"ABCDEF"[oi]||""}</b>${esc(o)}</button>`}).join("")}</div>
+      ${keyed&&avDone&&avSel[i]!==-1&&v.a[i]!==avSel[i]?`<div class="ans-right">To'g'ri javob: <b>${"ABCDEF"[v.a[i]]||""}</b>) ${esc(q.o[v.a[i]]||"")}</div>`:""}
     </div>`).join("")+(keyed?`
     <div id="av-sum"></div>
     <button class="go" id="av-check" style="margin-top:14px">${avDone?"Qayta yechish":"Tekshirish"}</button>`:"")
