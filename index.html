@@ -112,6 +112,8 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 .qi .n{color:var(--gold);font:700 13px var(--serif)}
 .qi .qt{margin:6px 0 8px;line-height:1.5;font-size:15px;white-space:pre-wrap}
 .qi .qimg{display:block;width:100%;max-width:520px;margin:6px auto 10px;border-radius:12px;border:1px solid var(--line);background:#fff}
+.qi .blank{display:inline-block;box-sizing:border-box;min-width:80px;max-width:100%;border:0;border-bottom:2px solid var(--gold);background:transparent;color:var(--ink);font:inherit;font-size:15px;padding:2px 6px;outline:none;vertical-align:bottom}
+.qi .blank:focus{border-bottom-color:#fff;background:rgba(255,255,255,.06)}
 .qi .qo{display:grid;gap:6px}
 .qi .qo div{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04);font-size:14px;line-height:1.45}
 .qi .qo b{color:var(--tile);margin-right:6px}
@@ -954,6 +956,7 @@ function findAttVar(id){
   return null;
 }
 let avSel=null,avV=null,avDone=false;
+document.addEventListener("input",e=>{const b=e.target.closest&&e.target.closest(".blank");if(b&&b.dataset.bk)avTxt[b.dataset.bk]=b.value});
 function openVariant(id){
   const v=findAttVar(id);
   if(!v){toast("Variant topilmadi.");return}
@@ -968,12 +971,29 @@ function openVariant(id){
   show("att-view");
   window.scrollTo(0,0);
 }
+let avTxt={};
+function openQ(t,qi){
+  const key=((avV&&avV.id)||"?")+"|"+qi+"|";
+  let bi=0;
+  const mk=(k,w)=>`<input class="blank" data-bk="${k}" style="width:${w}ch" value="${esc(avTxt[k]||"")}">`;
+  if(/_{3,}/.test(t)){
+    return esc(t).replace(/_{3,}(?:\s+_{3,})*/g,m=>mk(key+(bi++),Math.min(Math.max(m.replace(/\s/g,"").length,12),44)));
+  }
+  if(/Javob:/.test(t))return esc(t);
+  const lines=esc(t).split("\n");const out=[];let inPart=false;
+  for(const ln of lines){
+    if(/^[a-f]\)/.test(ln)){if(inPart)out.push("Javob: "+mk(key+(bi++),30));inPart=true}
+    out.push(ln);
+  }
+  out.push("Javob: "+mk(key+(bi++),30));
+  return out.join("\n");
+}
 function renderAttView(keyed){
   const v=avV;
   $("av-list").innerHTML=v.questions.map((q,i)=>`
     <div class="qi">
       <div class="n">${i+1}-savol</div>
-      <div class="qt">${esc(q.t)}</div>
+      <div class="qt">${(!q.o||q.o.length===0)?openQ(q.t,i):esc(q.t)}</div>
       ${q.img?`<img class="qimg" src="${esc(q.img)}" alt="rasm" loading="lazy">`:""}
       <div class="qo">${(!q.o||q.o.length===0)?`<div class="open">&#9997;&#65039; Ochiq savol — javobni yozing (avtomatik tekshirilmaydi)</div>`:q.o.map((o,oi)=>{
         const right=keyed&&avDone&&v.a[i]===oi;
