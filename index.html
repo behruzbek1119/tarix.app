@@ -114,6 +114,8 @@ background:var(--ink);color:var(--night);padding:11px 14px;border-radius:12px;fo
 .qi .qimg{display:block;width:100%;max-width:520px;margin:6px auto 10px;border-radius:12px;border:1px solid var(--line);background:#fff}
 .qi .blank{display:inline-block;box-sizing:border-box;min-width:80px;max-width:100%;border:0;border-bottom:2px solid var(--gold);background:transparent;color:var(--ink);font:inherit;font-size:15px;padding:2px 6px;outline:none;vertical-align:bottom}
 .qi .blank:focus{border-bottom-color:#fff;background:rgba(255,255,255,.06)}
+.qi .blank.right{border-bottom-color:#3ecf8e;background:rgba(62,207,142,.10)}
+.qi .blank.wrong{border-bottom-color:#e05a5a;background:rgba(224,90,90,.10)}
 .qi .qo{display:grid;gap:6px}
 .qi .qo div{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.04);font-size:14px;line-height:1.45}
 .qi .qo b{color:var(--tile);margin-right:6px}
@@ -406,7 +408,7 @@ function ensureData(file,check){
   if(DLLOADER[file])return DLLOADER[file];
   DLLOADER[file]=new Promise((res,rej)=>{
     const s=document.createElement("script");
-    s.src=file+(file.indexOf("?")<0?"?v=4":"");
+    s.src=file+(file.indexOf("?")<0?"?v=5":"");
     s.onload=()=>check()?res():rej(new Error(file));
     s.onerror=()=>rej(new Error(file));
     document.head.appendChild(s)});
@@ -972,21 +974,38 @@ function openVariant(id){
   window.scrollTo(0,0);
 }
 let avTxt={};
+const nz=s=>String(s||"").toLowerCase().replace(/[ʻʼ'`´’‘]/g,"").replace(/[^\p{L}\p{N}]+/gu,"");
+function openKey(i,b){return ((avV&&avV.id)||"?")+"|"+i+"|"+b}
+function openRight(i){
+  const v=avV,e=(v&&Array.isArray(v.a[i]))?v.a[i]:null;
+  if(!e)return false;
+  return e.every((x,b)=>nz(avTxt[openKey(i,b)]||"")===nz(x));
+}
 function openQ(t,qi){
-  const key=((avV&&avV.id)||"?")+"|"+qi+"|";
+  const exp=(avV&&Array.isArray(avV.a[qi]))?avV.a[qi]:null;
   let bi=0;
-  const mk=(k,w)=>`<input class="blank" data-bk="${k}" style="width:${w}ch" value="${esc(avTxt[k]||"")}">`;
+  const mk=w=>{
+    const k=openKey(qi,bi),idx=bi;bi++;
+    let cls="blank";
+    if(avDone&&exp&&idx<exp.length)cls+=nz(avTxt[k]||"")===nz(exp[idx])?" right":" wrong";
+    return `<input class="${cls}" data-bk="${k}" style="width:${w}ch" value="${esc(avTxt[k]||"")}">`;
+  };
+  let html;
   if(/_{3,}/.test(t)){
-    return esc(t).replace(/_{3,}(?:\s+_{3,})*/g,m=>mk(key+(bi++),Math.min(Math.max(m.replace(/\s/g,"").length,12),44)));
+    html=esc(t).replace(/_{3,}(?:\s+_{3,})*/g,m=>mk(Math.min(Math.max(m.replace(/\s/g,"").length,12),44)));
+  }else if(/Javob:/.test(t)){
+    html=esc(t);
+  }else{
+    const lines=esc(t).split("\n");const out=[];let inPart=false;
+    for(const ln of lines){
+      if(/^[a-f]\)/.test(ln)){if(inPart)out.push("Javob: "+mk(30));inPart=true}
+      out.push(ln);
+    }
+    out.push("Javob: "+mk(30));
+    html=out.join("\n");
   }
-  if(/Javob:/.test(t))return esc(t);
-  const lines=esc(t).split("\n");const out=[];let inPart=false;
-  for(const ln of lines){
-    if(/^[a-f]\)/.test(ln)){if(inPart)out.push("Javob: "+mk(key+(bi++),30));inPart=true}
-    out.push(ln);
-  }
-  out.push("Javob: "+mk(key+(bi++),30));
-  return out.join("\n");
+  while(exp&&bi<exp.length)html+="\nJavob: "+mk(30);
+  return html;
 }
 function renderAttView(keyed){
   const v=avV;
@@ -995,13 +1014,14 @@ function renderAttView(keyed){
       <div class="n">${i+1}-savol</div>
       <div class="qt">${(!q.o||q.o.length===0)?openQ(q.t,i):esc(q.t)}</div>
       ${q.img?`<img class="qimg" src="${esc(q.img)}" alt="rasm" loading="lazy">`:""}
-      <div class="qo">${(!q.o||q.o.length===0)?`<div class="open">&#9997;&#65039; Ochiq savol — javobni yozing (avtomatik tekshirilmaydi)</div>`:q.o.map((o,oi)=>{
+      <div class="qo">${(!q.o||q.o.length===0)?`<div class="open">&#9997;&#65039; Ochiq savol — javobni yozing${keyed?"":" (avtomatik tekshirilmaydi)"}</div>`:q.o.map((o,oi)=>{
         const right=keyed&&avDone&&v.a[i]===oi;
         const wrong=keyed&&avDone&&avSel[i]===oi&&v.a[i]!==oi;
         const sel=!avDone&&avSel[i]===oi;
         const cls="qopt"+(right?" right":wrong?" wrong":sel?" sel":"");
         return `<button type="button" class="${cls}" data-qi="${i}" data-oi="${oi}"${avDone?" disabled":""}><b>${"ABCDEF"[oi]||""}</b>${esc(o)}</button>`}).join("")}</div>
       ${keyed&&avDone&&avSel[i]!==-1&&v.a[i]!==avSel[i]?`<div class="ans-right">To'g'ri javob: <b>${"ABCDEF"[v.a[i]]||""}</b>) ${esc(q.o[v.a[i]]||"")}</div>`:""}
+      ${keyed&&avDone&&(!q.o||q.o.length===0)&&!openRight(i)?`<div class="ans-right">To'g'ri javob: ${(Array.isArray(v.a[i])?v.a[i]:[]).map((x,b)=>`${"ab"[b]||""}) <b>${esc(x)}</b>`).join(" · ")}</div>`:""}
     </div>`).join("")+(keyed?`
     <div id="av-sum"></div>
     <button class="go" id="av-check" style="margin-top:14px">${avDone?"Qayta yechish":"Tekshirish"}</button>`:"")
@@ -1009,11 +1029,19 @@ function renderAttView(keyed){
 }
 function attCheck(){
   const v=avV;
-  if(avDone){avSel=v.questions.map(()=>-1);avDone=false;renderAttView(true);window.scrollTo(0,0);return}
-  const un=avSel.filter(x=>x===-1).length;
+  if(avDone){
+    avSel=v.questions.map(()=>-1);avDone=false;
+    const pre=v.id+"|";Object.keys(avTxt).forEach(k=>{if(k.indexOf(pre)===0)delete avTxt[k]});
+    renderAttView(true);window.scrollTo(0,0);return}
+  const keyed=!!v.a&&v.a.length===v.questions.length;
+  const un=avSel.reduce((s,x,i)=>s+((v.questions[i].o&&v.questions[i].o.length&&x===-1)?1:0),0);
   if(un){toast(un+" savol javoblanmagan. Avval barcha savollarga javob bering.");return}
   avDone=true;
-  const ok=avSel.reduce((s,x,i)=>s+(x===v.a[i]?1:0),0);
+  let ok=0;
+  v.questions.forEach((q,i)=>{
+    if(q.o&&q.o.length){if(keyed&&avSel[i]===v.a[i])ok++}
+    else if(keyed&&openRight(i))ok++
+  });
   const pct=Math.round(ok/v.questions.length*100);
   haptic(ok===v.questions.length?"ok":pct>=70?"done":"err");
   renderAttView(true);
