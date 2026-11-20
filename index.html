@@ -420,25 +420,40 @@ if(seen){sp.style.display="none"}else{sp.onclick=hide;setTimeout(hide,2600)}
 
 /* ===== yopiq rejim (privacy): faqat ?t= maxsus token bilan ochiladi =====
    Manba kodida faqat SHA-256 xarsi bor — tokenning o'zi emas. */
-const ACC_HASH="6f2ed54e24513909c985ff20617167f1abf7aa62cca33788603d4f16bbe6d609";
+const ACC_HASH="6f2ed54e24513909c985ff20617167f1abf7aa62cca33788603d4f16bbe6d609"; /* admin (fallback) */
 let LOCKED=true, UNLOCK_CB=null;
+function _unlock(){
+  LOCKED=false;
+  try{localStorage.setItem("tarix_acc","1")}catch(e){}
+  try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
+  const l=$("lock");if(l)l.hidden=true;
+  if(UNLOCK_CB)UNLOCK_CB();               /* token tasdiqlandi — ilova ishga tushsin */
+}
+function _sha256hex(s){
+  return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s))
+    .then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join(""));
+}
+function _loadHashes(n){                  /* xarlar fayli: keshsiz, bir necha urinish bilan */
+  return fetch("acc_hashes.json?cb="+Date.now(),{cache:"no-store"})
+    .then(r=>{if(!r.ok)throw new Error("404");return r.json()})
+    .catch(e=>{if(n>0)return _loadHashes(n-1);throw e});
+}
 (function(){
   let on=false;try{on=localStorage.getItem("tarix_acc")==="1"}catch(e){}
   if(on){LOCKED=false;return}              /* avval ochilgan — qulf ko'rinmaydi */
   const lock=$("lock");
   const m=location.search.match(/[?&]t=([^&]+)/);
   if(!m){lock.hidden=false;return}         /* token yo'q — qulf darhol */
-  try{
-    crypto.subtle.digest("SHA-256",new TextEncoder().encode(decodeURIComponent(m[1]))).then(b=>{
-      const hex=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
-      if(hex===ACC_HASH){
-        LOCKED=false;
-        try{localStorage.setItem("tarix_acc","1")}catch(e){}
-        try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
-        if(UNLOCK_CB)UNLOCK_CB();          /* token tasdiqlandi — ilova ishga tushsin */
-      }else{lock.hidden=false}
-    }).catch(()=>{lock.hidden=false});
-  }catch(e){lock.hidden=false}
+  let hex=null;
+  _sha256hex(decodeURIComponent(m[1]))
+    .then(h=>{hex=h;return _loadHashes(3)})
+    .then(list=>{
+      if((Array.isArray(list)&&list.indexOf(hex)>=0)||hex===ACC_HASH){_unlock()}
+      else{lock.hidden=false}
+    })
+    .catch(()=>{                           /* tarmoq xatosi: faqat admin tokeni ishlaydi */
+      if(hex===ACC_HASH){_unlock()}else{lock.hidden=false}
+    });
 })();
 
 /* ===== yordamchilar: aralashtirish, haptics, ma'lumot yuklash ===== */
