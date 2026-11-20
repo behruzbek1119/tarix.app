@@ -34,6 +34,19 @@ background:linear-gradient(#070D24,#13286E 70%,#1E4BA8);transition:opacity .6s}
 #splash h1{position:relative;font-size:54px;letter-spacing:.04em;color:var(--gold);margin-top:-80px}
 #splash p{position:relative;color:var(--ink);opacity:.85;margin-top:6px}
 
+/* qulf ekrani (yopiq rejim — ruxsat yo'q bo'lsa) */
+#lock{position:fixed;inset:0;z-index:100;display:grid;place-items:center;text-align:center;padding:26px;
+background:linear-gradient(#070D24,#13286E 70%,#1E4BA8)}
+#lock[hidden]{display:none}
+#lock .stars{position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 30% 8%,#fff,transparent),radial-gradient(1.5px 1.5px at 55% 22%,#fff,transparent),radial-gradient(1px 1px at 78% 12%,#fff,transparent),radial-gradient(1.5px 1.5px at 90% 30%,#fff,transparent),radial-gradient(1px 1px at 20% 40%,#fff,transparent),radial-gradient(1.5px 1.5px at 66% 45%,#fff,transparent);animation:tw 3s ease-in-out infinite alternate}
+#lock .box{position:relative;max-width:430px}
+#lock h1{font-size:42px;letter-spacing:.04em;color:var(--gold)}
+#lock .sub{color:var(--ink);opacity:.88;margin-top:8px}
+#lock .pay{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-top:18px;text-align:left}
+#lock .pay b{color:var(--gold)}
+#lock .pay p{margin-top:6px;font-size:15px;color:var(--ink);opacity:.92}
+#lock .adm{display:inline-block;margin-top:16px;color:var(--tile);border:1px solid var(--line);border-radius:99px;padding:8px 18px;text-decoration:none}
+
 /* bosh sahifa */
 .hero{position:relative;margin:0 -16px;padding:calc(20px + env(safe-area-inset-top,0)) 18px 112px;overflow:hidden;
 background:linear-gradient(#1B3E92,#14286B 58%,var(--night2))}
@@ -171,6 +184,18 @@ nav button{font-size:12px}
 <div id="splash"><div class="stars"></div><div class="moon"></div>
 <div><h1>Tarix</h1><p>Ajdodlar izidan</p></div>
 <svg class="sk" viewBox="0 0 390 150" preserveAspectRatio="xMidYMax meet"><use href="#sky"/></svg></div>
+
+<div id="lock" hidden><div class="stars"></div>
+<div class="box">
+<h1>🔒 Tarix</h1>
+<p class="sub">Bu ilova yopiq rejimda. Davom etish uchun ruxsat kerak.</p>
+<div class="pay">
+<p>💳 <b>To'lov:</b> Click / Payme / Uzum orqali</p>
+<p>💰 <b>Narx:</b> tez orada e'lon qilinadi</p>
+<p>✅ To'lov tasdiqlangandan so'ng sizga <b>maxsus havola</b> yuboriladi.</p>
+</div>
+<a class="adm" href="https://t.me/behruzibroximov12123">Admin bilan bog'lanish</a>
+</div></div>
 
 <main class="app">
 <section class="view on" id="v-home">
@@ -393,6 +418,29 @@ let seen=false;try{seen=sessionStorage.getItem("s")}catch(e){}
 const sp=$("splash");function hide(){sp.classList.add("out");try{sessionStorage.setItem("s","1")}catch(e){}}
 if(seen){sp.style.display="none"}else{sp.onclick=hide;setTimeout(hide,2600)}
 
+/* ===== yopiq rejim (privacy): faqat ?t= maxsus token bilan ochiladi =====
+   Manba kodida faqat SHA-256 xarsi bor — tokenning o'zi emas. */
+const ACC_HASH="6f2ed54e24513909c985ff20617167f1abf7aa62cca33788603d4f16bbe6d609";
+let LOCKED=true, UNLOCK_CB=null;
+(function(){
+  let on=false;try{on=localStorage.getItem("tarix_acc")==="1"}catch(e){}
+  if(on){LOCKED=false;return}              /* avval ochilgan — qulf ko'rinmaydi */
+  const lock=$("lock");
+  const m=location.search.match(/[?&]t=([^&]+)/);
+  if(!m){lock.hidden=false;return}         /* token yo'q — qulf darhol */
+  try{
+    crypto.subtle.digest("SHA-256",new TextEncoder().encode(decodeURIComponent(m[1]))).then(b=>{
+      const hex=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+      if(hex===ACC_HASH){
+        LOCKED=false;
+        try{localStorage.setItem("tarix_acc","1")}catch(e){}
+        try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
+        if(UNLOCK_CB)UNLOCK_CB();          /* token tasdiqlandi — ilova ishga tushsin */
+      }else{lock.hidden=false}
+    }).catch(()=>{lock.hidden=false});
+  }catch(e){lock.hidden=false}
+})();
+
 /* ===== yordamchilar: aralashtirish, haptics, ma'lumot yuklash ===== */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
 function prep(q){const ord=[0,1,2,3];shuffle(ord);
@@ -404,6 +452,7 @@ function haptic(kind){try{const H=tg&&tg.HapticFeedback;if(!H)return;
   else if(kind==="done")H.impactOccurred("medium")}catch(e){}}
 const DLLOADER={};
 function ensureData(file,check){
+  if(LOCKED)return Promise.reject(new Error("locked"));   /* yopiq rejim — fayl yuklanmaydi */
   if(check())return Promise.resolve();
   if(DLLOADER[file])return DLLOADER[file];
   DLLOADER[file]=new Promise((res,rej)=>{
@@ -1071,8 +1120,8 @@ const qh=e.target.closest(".qa-header");if(qh){qh.parentElement.classList.toggle
 const bk=e.target.closest("[data-back]");if(bk){show(bk.dataset.back);return}
 const g=e.target.closest("[data-go]");if(g){if(g.dataset.go==="att"){openAtt();return}show(g.dataset.go);return}});
 window.CLASSES_READY=true;
-renderDaily();
-store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()});
+function bootApp(){renderDaily();store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()})}
+if(!LOCKED){bootApp()}else{UNLOCK_CB=bootApp}   /* token asinxron tekshirilsa — keyin ishga tushadi */
 </script>
 </body>
 </html>
