@@ -1026,12 +1026,12 @@ let avTxt={};
 const nz=s=>String(s||"").toLowerCase().replace(/[ʻʼ'`´’‘]/g,"").replace(/[^\p{L}\p{N}]+/gu,"");
 function openKey(i,b){return ((avV&&avV.id)||"?")+"|"+i+"|"+b}
 function openRight(i){
-  const v=avV,e=(v&&Array.isArray(v.a[i]))?v.a[i]:null;
+  const v=avV,e=(v&&Array.isArray(v.a)&&Array.isArray(v.a[i]))?v.a[i]:null;
   if(!e)return false;
   return e.every((x,b)=>nz(avTxt[openKey(i,b)]||"")===nz(x));
 }
 function openQ(t,qi){
-  const exp=(avV&&Array.isArray(avV.a[qi]))?avV.a[qi]:null;
+  const exp=(avV&&Array.isArray(avV.a)&&Array.isArray(avV.a[qi]))?avV.a[qi]:null;
   let bi=0;
   const mk=w=>{
     const k=openKey(qi,bi),idx=bi;bi++;
