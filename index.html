@@ -457,7 +457,7 @@ function ensureData(file,check){
   if(DLLOADER[file])return DLLOADER[file];
   DLLOADER[file]=new Promise((res,rej)=>{
     const s=document.createElement("script");
-    s.src=file+(file.indexOf("?")<0?"?v=7":"");
+    s.src=file+(file.indexOf("?")<0?"?v=8":"");
     s.onload=()=>check()?res():rej(new Error(file));
     s.onerror=()=>rej(new Error(file));
     document.head.appendChild(s)});
@@ -987,7 +987,7 @@ function openAtt(){
       $("att-grid").innerHTML=window.ATT.groups.map(g=>{
         const tot=g.variants.reduce((s,v)=>s+v.questions.length,0);
         const keyed=g.variants.filter(v=>v.a).length;
-        const icon=g.id==="aralash"?"📋":"📚";
+        const icon=(g.id==="aralash"||g.id==="k178")?"📋":"📚";
         return `<button class="class-btn" data-attg="${esc(g.id)}"><div><div class="num">${icon}</div><div class="title">${esc(g.title)}</div></div><small>${g.variants.length} variant · ${tot} savol${keyed?` · ${keyed} tekshiruvli`:""}</small></button>`}).join("");
     })
     .catch(()=>{$("att-grid").innerHTML='<p class="note">Variantlar fayli yuklanmadi. Internetni tekshiring va qayta kirib ko\'ring.</p>'});
