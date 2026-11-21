@@ -101,6 +101,15 @@ background:linear-gradient(#1B3E92,#14286B 58%,var(--night2))}
 .grid b{font:700 24px var(--serif);display:block}.grid span{color:var(--mute);font-size:13px}
 .note{margin-top:14px;font-size:13px;color:var(--mute)}
 
+/* 🎮 o'yin: vaqt mashinasi */
+.g-year{font:700 26px var(--serif);color:var(--gold);letter-spacing:.02em}
+.g-bar{height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden;margin:8px 0 4px}
+.g-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--tile),var(--gold));transition:width .5s ease}
+.g-fb{min-height:22px;text-align:center;font-weight:700;margin:8px 0 2px}
+.g-ev{min-height:0;text-align:center;font-size:13.5px;color:var(--gold);opacity:0;transition:opacity .3s;margin-bottom:4px}
+.g-ev.on{opacity:1;animation:pop .3s ease}
+#g-ranks .rk b:last-child{color:var(--gold)}
+
 nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(10,18,48,.94);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
 nav div{max-width:520px;margin:0 auto;display:flex}
 nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;font-size:12px;color:var(--mute)}
@@ -264,6 +273,51 @@ nav button{font-size:12px}
   <div id="av-list"></div>
 </section>
 
+<!-- 🎮 O'YIN: VAQT MASHINASI -->
+<section class="view" id="v-game">
+  <h2 style="margin-top:22px">🕰️ Vaqt mashinasi</h2>
+  <p class="sub">1990 dan 2025 gacha sayohat qiling. To'g'ri javob = ilgarirasiz, xato = orqaga tushasiz!</p>
+
+  <div id="g-start">
+    <div class="grid">
+      <div class="card"><b id="g-besty">1990</b><span>eng yuqori yil</span></div>
+      <div class="card"><b id="g-bestb">0</b><span>eng yuqori ball</span></div>
+    </div>
+    <button class="go" id="g-btn" style="margin-top:14px">▶ Boshlash</button>
+    <p class="note">Har to'g'ri javobda yil ilgariladi va tez javob uchun qo'shimcha ball olasiz. 2025 ga yetib borsangiz — mukofot!</p>
+    <div id="g-ranks" style="margin-top:16px"></div>
+    <div id="g-lead" class="note">Reyting yuklanmoqda...</div>
+  </div>
+
+  <div id="g-play" style="display:none">
+    <div class="g-year" id="g-year">1990</div>
+    <div class="g-bar"><i id="g-bar" style="width:0%"></i></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:6px">
+      <span id="g-stats">Ball: 0</span><span id="g-clock">⏱ 00:00</span>
+    </div>
+    <div class="g-ev" id="g-event"></div>
+    <div class="timer" id="g-timer"><i></i></div>
+    <div class="q"><h3 id="g-q"></h3></div>
+    <div class="opts" id="g-opts"></div>
+    <div class="g-fb" id="g-fb"></div>
+  </div>
+
+  <div id="g-end" style="display:none">
+    <div class="card" style="margin-top:14px;text-align:center">
+      <b id="g-end-year" style="font:700 40px var(--serif);color:var(--gold);display:block">2025</b>
+      <span id="g-end-sub" style="color:var(--mute)">yilga yetdingiz!</span>
+    </div>
+    <div class="grid">
+      <div class="card"><b id="g-end-ball">0</b><span>ball</span></div>
+      <div class="card"><b id="g-end-tg">0</b><span>to'g'ri javob</span></div>
+    </div>
+    <div id="g-end-event" class="note" style="text-align:center"></div>
+    <button class="go" id="g-again" style="margin-top:14px">🔄 Qayta o'ynash</button>
+    <button class="back-btn" data-go="home" style="width:100%;margin-top:8px">Bosh sahifaga</button>
+    <div id="g-ranks2" style="margin-top:16px"></div>
+  </div>
+</section>
+
 <section class="view" id="v-mavzu">
   <button class="back-btn" data-back="class">&larr; Bosqichlarga qaytish</button>
   <h2>Mavzulashtirilgan test</h2><p class="sub">Mavzuni tanlang. Savollar darslik asosida tuzilgan.</p>
@@ -276,6 +330,7 @@ nav button{font-size:12px}
 <button data-go="home" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Bosh</button>
 <button data-go="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Testlar</button>
 <button data-go="att"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="M8.5 13.5L7 22l5-3 5 3-1.5-8.5"/></svg>Attestat</button>
+<button data-go="game"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="5"/><path d="M7 10v4M5 12h4M15.5 11h.01M17.5 13h.01"/></svg>O'yin</button>
 <button data-go="rating"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 0 3 3"/></svg>Reyting</button>
 <button data-go="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profil</button>
 </div></nav>
@@ -791,7 +846,7 @@ const CLASSES={
 let curCls=null,curTopics=[];
 const prog=c=>(P.prog[c]=P.prog[c]||{g:0,qa:[]});
 const SUBV={"class":"tests",guide:"tests","qa-topics":"tests","qa-list":"tests","mavzu":"tests","att":"att","att-view":"att"};
-function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+id).classList.add("on");
+function show(id){if(id!=="game"&&typeof gStop==="function")gStop();document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("v-"+id).classList.add("on");
   const nv=SUBV[id]||id;document.querySelectorAll("nav button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.go===nv));window.scrollTo(0,0)}
 function qaTopics(c){const C=CLASSES[c];
   if(C.subj){const T=(window.QA711&&window.QA711[c])||[];
@@ -1135,6 +1190,185 @@ const qh=e.target.closest(".qa-header");if(qh){qh.parentElement.classList.toggle
 const bk=e.target.closest("[data-back]");if(bk){show(bk.dataset.back);return}
 const g=e.target.closest("[data-go]");if(g){if(g.dataset.go==="att"){openAtt();return}show(g.dataset.go);return}});
 window.CLASSES_READY=true;
+
+/* ===== 🎮 VAQT MASHINASI ===== */
+const G_MIN=1990,G_MAX=2025,G_SPAN=G_MAX-G_MIN;
+const G_EVENTS=[
+ {y:1991,t:"🌍 SSSR parchalandi — O'zbekiston mustaqilligi e'lon qilindi!"},
+ {y:1995,t:"🌐 Internet O'zbekistonga keldi"},
+ {y:2001,t:"📱 birinchi smartfonlar sotuvi boshlandi"},
+ {y:2008,t:"📉 jahon moliyaviy inqirozi"},
+ {y:2012,t:"🤖 Marsda Curiosity yurdi"},
+ {y:2016,t:"🏅 Rio Olimpiadasi"},
+ {y:2020,t:"😷 COVID-19 pandemiyasi"},
+ {y:2022,t:"⚽ Qatar chempionati"},
+ {y:2024,t:"🤖 sun'iy intellekt kuchaydi"}
+];
+let gY=G_MIN,gBall=0,gOk=0,gN=0,gT0=0,gTick=null,gQ=null,gLock=false,gPool=[],gEvY=0;
+
+function gMyUid(){try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||0}catch(e){return 0}}
+
+function gLoadPool(){
+  return Promise.allSettled([
+    ensureData("mauzular.js",()=>!!(window.MAVZU_TEST&&window.MAVZU_TEST.groups&&window.MAVZU_TEST.groups.length)),
+    ensureData("mauzular711.js",()=>!!(window.MAVZU711&&Object.keys(window.MAVZU711).length))
+  ]).then(()=>{
+    try{const G=(window.MAVZU_TEST&&window.MAVZU_TEST.groups)||[];
+      G.forEach((g,i)=>{window.SAVOLLAR["6m"+i]=g.questions});
+      window.SAVOLLAR["6mA"]=G.flatMap(g=>g.questions)}catch(e){}
+    try{Object.keys(window.MAVZU711||{}).forEach(c=>{
+      const G=window.MAVZU711[c].groups||[];
+      G.forEach((g,i)=>{window.SAVOLLAR[c+"m"+i]=g.questions});
+      window.SAVOLLAR[c+"mA"]=G.flatMap(g=>g.questions)})}catch(e){}
+    gPool=[];
+    Object.keys(window.SAVOLLAR||{}).forEach(k=>{
+      const a=window.SAVOLLAR[k];if(!Array.isArray(a))return;
+      a.forEach(q=>{if(q&&q.q&&Array.isArray(q.o)&&q.o.length>=2&&typeof q.a==="number"&&q.a>=0&&q.a<q.o.length)gPool.push(q)});
+    });
+    return gPool.length;
+  });
+}
+
+function gStats(){
+  $("g-year").textContent=gY;
+  $("g-bar").style.width=((gY-G_MIN)/G_SPAN*100).toFixed(1)+"%";
+  $("g-stats").textContent="Ball: "+gBall+"  |  "+gOk+"/"+gN;
+}
+function gClock(){
+  const s=Math.floor((Date.now()-gT0)/1000);
+  $("g-clock").textContent="⏱ "+String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+}
+function gEvent(){
+  const p=G_EVENTS.filter(e=>e.y<=gY);
+  const last=p[p.length-1];
+  if(last&&last.y>gEvY){
+    gEvY=last.y;
+    const el=$("g-event");el.textContent=last.t;el.classList.add("on");
+    setTimeout(()=>el.classList.remove("on"),3500);
+  }
+}
+function gNext(){
+  gLock=false;
+  gQ=prep(gPool[Math.floor(Math.random()*gPool.length)]);
+  gQ.t0=Date.now();
+  $("g-q").textContent=gQ.q;
+  const qt=$("g-q");qt.classList.remove("q-pop");void qt.offsetWidth;qt.classList.add("q-pop");
+  $("g-opts").innerHTML=gQ.o.map((o,i)=>`<button type="button" class="opt" data-i="${i}"><b>${"ABCD"[i]||""}</b> ${esc(o)}</button>`).join("");
+  $("g-opts").querySelectorAll(".opt").forEach(el=>el.onclick=()=>gPick(+el.dataset.i,el));
+  $("g-fb").textContent="";$("g-fb").style.color="";
+  const bar=$("g-timer").querySelector("i");
+  bar.style.transition="none";bar.style.width="100%";void bar.offsetWidth;
+  bar.style.transition="width 10s linear";bar.style.width="0%";
+  clearTimeout(gQ.to);gQ.to=setTimeout(gTimeout,10000);
+}
+function gPick(i,btn){
+  if(gLock||!gQ)return;gLock=true;
+  const bar=$("g-timer").querySelector("i");bar.style.transition="none";
+  clearTimeout(gQ.to);
+  const spent=(Date.now()-gQ.t0)/1000;
+  const right=(i===gQ.a);
+  gN++;
+  const opts=$("g-opts").querySelectorAll(".opt");
+  opts.forEach((b,j)=>{b.disabled=true;if(j===gQ.a)b.classList.add("ok")});
+  if(right){
+    gOk++;
+    const fast=Math.max(0,Math.round(10-spent));
+    const pts=10+fast;
+    gBall+=pts;
+    gY=Math.min(G_MAX,gY+1);
+    haptic("ok");btn.classList.add("ok");
+    $("g-fb").style.color="#2FD0A0";
+    $("g-fb").textContent="✅ To'g'ri! +"+pts+" ball";
+  }else{
+    gY=Math.max(G_MIN,gY-2);
+    haptic("err");opts[i].classList.add("no");
+    $("g-fb").style.color="#E0586E";
+    $("g-fb").textContent="❌ Noto'g'ri! To'g'ri javob: "+("ABCD"[gQ.a]||"");
+  }
+  gEvent();gStats();
+  setTimeout(()=>{if(gY>=G_MAX)gEnd(true);else gNext()},1100);
+}
+function gTimeout(){
+  if(gLock||!gQ)return;gLock=true;
+  const bar=$("g-timer").querySelector("i");bar.style.transition="none";
+  gN++;
+  gY=Math.max(G_MIN,gY-1);
+  haptic("err");
+  $("g-fb").style.color="#E0586E";
+  $("g-fb").textContent="⏰ Vaqt tugadi!";
+  gStats();
+  setTimeout(()=>{if(gY>=G_MAX)gEnd(true);else gNext()},1100);
+}
+function gSend(){
+  try{if(tg&&tg.sendData)tg.sendData(JSON.stringify({t:"oyinnatija",d:{year:gY,ball:gBall,ok:gOk,n:gN}}))}catch(e){}
+}
+function gDrawBest(){
+  let by=0,bb=0;
+  try{const s=JSON.parse(localStorage.getItem("tarix_game")||"{}");by=s.year||0;bb=s.ball||0}catch(e){}
+  if(gY>by||gBall>bb){by=Math.max(by,gY);bb=Math.max(bb,gBall);try{localStorage.setItem("tarix_game",JSON.stringify({year:by,ball:bb}))}catch(e){}}
+  $("g-besty").textContent=by||G_MIN;
+  $("g-bestb").textContent=bb||0;
+}
+function gLeader(){
+  const el=$("g-lead");
+  fetch("oyin_reyting.json?cb="+Date.now(),{cache:"no-store"})
+    .then(r=>r.ok?r.json():[])
+    .then(L=>{
+      if(!Array.isArray(L)||!L.length){
+        if(el)el.textContent="Reyting hozircha bo'sh — birinchi bo'ling!";
+        if($("g-ranks"))$("g-ranks").innerHTML="";
+        if($("g-ranks2"))$("g-ranks2").innerHTML="";
+        return;
+      }
+      const html=L.slice(0,10).map((x,i)=>`<div class="rk"><b>${i+1}</b><span>${esc(x.name||"Foydalanuvchi")}</span><b>${x.year||G_MIN} yil</b></div>`).join("");
+      if($("g-ranks"))$("g-ranks").innerHTML=html;
+      if($("g-ranks2"))$("g-ranks2").innerHTML=html;
+      if(el)el.textContent="";
+    })
+    .catch(()=>{if(el)el.textContent="Reytingni ko'rib bo'lmadi."});
+}
+function gEnd(win){
+  if(gTick){clearInterval(gTick);gTick=null}
+  if(gQ){clearTimeout(gQ.to)}
+  gLock=true;
+  haptic(win?"done":"err");
+  $("g-play").style.display="none";
+  $("g-end").style.display="block";
+  $("g-end-year").textContent=gY;
+  $("g-end-sub").textContent=win?"🎉 Tabriklaymiz! 2025 ga yetdingiz!":"O'yin yakunlandi";
+  $("g-end-ball").textContent=gBall;
+  $("g-end-tg").textContent=gOk+" / "+gN;
+  $("g-end-event").textContent=win?"Siz tarix bo'ylab muvaffaqiyatli sayohat qildingiz!":"Yana bir bor urinib ko'ring — tarixni yaxshiroq bilasiz!";
+  gSend();gDrawBest();gLeader();
+}
+function gStop(){
+  if(gTick){clearInterval(gTick);gTick=null}
+  if(gQ){clearTimeout(gQ.to)}
+  gLock=true;
+  $("g-play").style.display="none";
+  $("g-end").style.display="none";
+  $("g-start").style.display="block";
+  gDrawBest();
+}
+function gStart(){
+  if(LOCKED)return;
+  $("g-start").style.display="none";$("g-end").style.display="none";$("g-play").style.display="block";
+  gY=G_MIN;gBall=0;gOk=0;gN=0;gEvY=0;gT0=Date.now();gLock=false;
+  gStats();$("g-event").classList.remove("on");$("g-event").textContent="";
+  $("g-clock").textContent="⏱ 00:00";
+  const b=$("g-btn");b.disabled=true;b.textContent="Savollar yuklanmoqda...";
+  gLoadPool().then(n=>{
+    b.disabled=false;b.textContent="▶ Boshlash";
+    if(!n){toast("Savollar topilmadi.");gStop();return}
+    gNext();
+    if(gTick)clearInterval(gTick);
+    gTick=setInterval(gClock,500);
+  }).catch(()=>{b.disabled=false;b.textContent="▶ Boshlash";toast("Ma'lumot yuklanmadi. Internetni tekshiring.");gStop()});
+}
+$("g-btn").onclick=gStart;
+$("g-again").onclick=gStart;
+gDrawBest();
+
 function bootApp(){renderDaily();store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()})}
 if(!LOCKED){bootApp()}else{UNLOCK_CB=bootApp}   /* token asinxron tekshirilsa — keyin ishga tushadi */
 </script>
