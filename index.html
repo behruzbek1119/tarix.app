@@ -6,11 +6,11 @@
 <title>Tarix</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--night:#0A1230;--night2:#111F4D;--lapis:#1E4BA8;--tile:#22B7B0;--gold:#D9AE56;--ink:#EFEBDD;--mute:#9FAACB;
---line:rgba(217,174,86,.26);--card:rgba(255,255,255,.06);
+:root{--night:#0D1038;--night2:#1A1458;--lapis:#4457E8;--tile:#3ECFC6;--gold:#F2C75C;--ink:#F4F1E4;--mute:#A3ADD8;
+--line:rgba(242,199,92,.3);--card:rgba(255,255,255,.06);
 --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;color-scheme:dark}
 *{box-sizing:border-box;margin:0}
-body{background:var(--night) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23D9AE56' stroke-opacity='.09'%3E%3Crect x='14' y='14' width='28' height='28'/%3E%3Crect x='14' y='14' width='28' height='28' transform='rotate(45 28 28)'/%3E%3C/g%3E%3C/svg%3E");
+body{background:var(--night) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23F2C75C' stroke-opacity='.1'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3Cpath d='M28 16 L40 28 L28 40 L16 28 Z'/%3E%3C/g%3E%3C/svg%3E");
 color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 button,input{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer;text-align:left}
@@ -49,7 +49,7 @@ background:linear-gradient(#070D24,#13286E 70%,#1E4BA8)}
 
 /* bosh sahifa */
 .hero{position:relative;margin:0 -16px;padding:calc(20px + env(safe-area-inset-top,0)) 18px 112px;overflow:hidden;
-background:linear-gradient(#1B3E92,#14286B 58%,var(--night2))}
+background:linear-gradient(160deg,#2E1F7A,#1A1458 55%,var(--night2))}
 .hero .moon{top:22px;right:22px;width:22px;height:22px;box-shadow:inset -6px -2px 0 0 var(--gold)}
 .hero .sk{position:absolute;left:0;right:0;bottom:-1px;width:100%;color:var(--night)}
 .hero h1{position:relative;font-size:27px;line-height:1.15}
@@ -214,15 +214,22 @@ nav button{font-size:12px}
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <symbol id="sky" viewBox="0 0 390 150"><g fill="currentColor">
-<rect x="0" y="132" width="390" height="18"/>
-<rect x="26" y="40" width="12" height="95"/><rect x="22" y="58" width="20" height="5"/><path d="M26 40L32 20L38 40Z"/>
-<rect x="48" y="105" width="52" height="30"/><path d="M48 105Q74 68 100 105Z"/>
-<rect x="118" y="62" width="10" height="73"/><path d="M118 62Q123 48 128 62Z"/>
-<rect x="262" y="62" width="10" height="73"/><path d="M262 62Q267 48 272 62Z"/>
-<rect x="125" y="48" width="140" height="87"/>
-<rect x="298" y="88" width="54" height="47"/><rect x="306" y="76" width="38" height="12"/><path d="M303 76Q325 20 347 76Z"/><rect x="324" y="12" width="2" height="12"/>
-<rect x="368" y="70" width="9" height="65"/><path d="M368 70L372.5 54L377 70Z"/></g>
-<path d="M165 135V86Q195 48 225 86V135Z" fill="#16296B"/><circle cx="195" cy="104" r="3.2" fill="#D9AE56"/></symbol>
+<rect x="0" y="134" width="390" height="16"/>
+<!-- Registon: chap minora -->
+<rect x="22" y="44" width="9" height="90"/><path d="M22 44Q26.5 30 31 44Z"/>
+<!-- Registon: madrasa + katta gumbaz -->
+<rect x="40" y="74" width="86" height="60"/><path d="M52 74Q83 38 114 74Z"/>
+<!-- Registon: o'ng minora -->
+<rect x="118" y="44" width="9" height="90"/><path d="M118 44Q122.5 30 127 44Z"/>
+<!-- Gur-e-Amir: Amir Temur maqbarasining katta gumbazi -->
+<rect x="160" y="88" width="84" height="46"/><path d="M170 88Q202 34 234 88Z"/>
+<circle cx="202" cy="52" r="3.4" fill="#F2C75C"/>
+<!-- Bibixonim masjidi: gumbaz + minora -->
+<rect x="270" y="80" width="58" height="54"/><path d="M278 80Q299 50 320 80Z"/>
+<rect x="332" y="58" width="8" height="76"/><path d="M332 58Q336 46 340 58Z"/>
+<!-- Shohizinda: gumbazlar -->
+<rect x="352" y="102" width="34" height="32"/><path d="M356 102Q369 82 382 102Z"/>
+</g></symbol>
 <symbol id="g-flame" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c.8 4 5.5 6 5.5 11.2a5.5 5.5 0 0 1-11 0c0-2.8 1.8-4 2.3-6.2 1 .8 1.7 1.8 2 3.2C11.6 8 12.4 5.4 12 2z"/></symbol>
 <symbol id="g-minaret" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1l3 6h-1.5V9h2v2h-2v11h-3V11h-2V9h2V7H9z"/></symbol>
 <symbol id="g-dome" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1h.8v3.2C17 5.6 19 9 19 12v1h2v2h-2v6H5v-6H3v-2h2v-1c0-3 2-6.400 6.200-7.800V1z"/></symbol>
