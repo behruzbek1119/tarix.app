@@ -51,10 +51,24 @@ background:linear-gradient(#070D24,#13286E 70%,#1E4BA8)}
 .hero{position:relative;margin:0 -16px;padding:calc(20px + env(safe-area-inset-top,0)) 18px 112px;overflow:hidden;
 background:linear-gradient(160deg,#2E1F7A,#1A1458 55%,var(--night2))}
 .hero .moon{top:22px;right:22px;width:22px;height:22px;box-shadow:inset -6px -2px 0 0 var(--gold)}
-.hero .sk{position:absolute;left:0;right:0;bottom:-1px;width:100%;color:var(--night)}
+.hero .sk{position:absolute;left:0;right:0;bottom:-1px;width:100%;color:var(--night);transition:opacity .6s ease}
+.sky-cap{position:absolute;right:14px;bottom:10px;font-size:11px;color:var(--mute);z-index:2;text-shadow:0 1px 5px rgba(0,0,0,.7)}
 .hero h1{position:relative;font-size:27px;line-height:1.15}
 .hero p{position:relative;color:#C9D4F2;margin-top:4px;font-size:14px}
 .coins{position:relative;display:inline-block;margin-top:14px;padding:4px 12px;border:1px solid var(--gold);border-radius:99px;color:var(--gold);font-size:14px}
+
+/* ⏰ VAQT MAVZUSI: 06:00–18:00 SARIQ (kunduz), 18:00–06:00 KO'K (kecha) */
+body.day{--night:#2B1B06;--night2:#4E3308;--lapis:#E8952A;--tile:#FFB54A;--gold:#FFD34E;--ink:#FFF7E2;--mute:#E0BC86;--line:rgba(255,211,78,.42);--card:rgba(255,255,255,.07);
+background:var(--night) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23FFD34E' stroke-opacity='.14'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3Cpath d='M28 16 L40 28 L28 40 L16 28 Z'/%3E%3C/g%3E%3C/svg%3E")}
+body.day .hero{background:linear-gradient(160deg,#C98A18,#8F5A10 55%,#3F2907)}
+body.day .hero p{color:#FFEABF}
+body.day .moon{box-shadow:none;background:radial-gradient(circle at 35% 35%,#FFF7D0,#FFC01E);filter:drop-shadow(0 0 12px rgba(255,190,50,.75))}
+body.day #splash,body.day #lock{background:linear-gradient(#F8CC58,#EE9F2E 62%,#B4700F)}
+body.day #splash .sk{color:#8A5410}
+body.day #splash h1,body.day #lock h1{color:#422704}
+body.day #splash .stars,body.day #lock .stars{animation:none;opacity:.3}
+body.day nav{background:rgba(43,27,6,.94)}
+body.day .pl-hero{background:linear-gradient(135deg,rgba(201,138,24,.5),rgba(255,181,74,.26))}
 .q{margin-top:-6px}
 .q h3{font-size:17px;margin:2px 0 10px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -230,6 +244,73 @@ nav button{font-size:12px}
 <!-- Shohizinda: gumbazlar -->
 <rect x="352" y="102" width="34" height="32"/><path d="M356 102Q369 82 382 102Z"/>
 </g></symbol>
+<!-- 🌍 DUNYO BINOLARI (avtomatik almashinadi) -->
+<symbol id="sky-egy" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<circle cx="336" cy="32" r="17"/>
+<path d="M28 134 L112 44 L196 134 Z"/>
+<path d="M206 134 L256 78 L306 134 Z"/>
+<rect x="316" y="106" width="58" height="20" rx="7"/>
+<rect x="356" y="88" width="18" height="20" rx="3"/>
+<path d="M353 88 L365 72 L377 88 Z"/>
+<rect x="316" y="124" width="10" height="10"/><rect x="360" y="124" width="10" height="10"/>
+</g></symbol>
+<symbol id="sky-gr" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<rect x="56" y="124" width="176" height="10"/>
+<rect x="64" y="70" width="11" height="54"/><rect x="90" y="70" width="11" height="54"/>
+<rect x="116" y="70" width="11" height="54"/><rect x="142" y="70" width="11" height="54"/>
+<rect x="168" y="70" width="11" height="54"/><rect x="194" y="70" width="11" height="54"/>
+<rect x="48" y="56" width="192" height="16"/>
+<path d="M48 56 L144 18 L240 56 Z"/>
+<rect x="266" y="98" width="12" height="36"/><rect x="292" y="110" width="12" height="24"/><rect x="318" y="104" width="12" height="30"/>
+</g></symbol>
+<symbol id="sky-rome" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<path fill-rule="evenodd" d="M56 134 L56 94 Q56 42 166 42 Q276 42 276 94 L276 134 Z M70 132 L70 116 A12 12 0 0 1 94 116 L94 132 Z M112 132 L112 116 A12 12 0 0 1 136 116 L136 132 Z M154 132 L154 116 A12 12 0 0 1 178 116 L178 132 Z M196 132 L196 116 A12 12 0 0 1 220 116 L220 132 Z M238 132 L238 116 A12 12 0 0 1 262 116 L262 132 Z M74 96 L74 84 A9 9 0 0 1 92 84 L92 96 Z M118 96 L118 84 A9 9 0 0 1 136 84 L136 96 Z M162 96 L162 84 A9 9 0 0 1 180 84 L180 96 Z M206 96 L206 84 A9 9 0 0 1 224 84 L224 96 Z M250 96 L250 84 A9 9 0 0 1 268 84 L268 96 Z"/>
+<rect x="296" y="106" width="46" height="28"/><rect x="304" y="96" width="30" height="12"/>
+</g></symbol>
+<symbol id="sky-ind" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<rect x="146" y="88" width="98" height="46"/>
+<path d="M162 88 C162 56 178 42 195 26 C212 42 228 56 228 88 Z"/>
+<rect x="192" y="14" width="6" height="16"/>
+<rect x="96" y="106" width="54" height="28"/><rect x="240" y="106" width="54" height="28"/>
+<rect x="58" y="62" width="9" height="72"/><path d="M58 62Q62.5 50 67 62Z"/>
+<rect x="114" y="62" width="9" height="72"/><path d="M114 62Q118.5 50 123 62Z"/>
+<rect x="268" y="62" width="9" height="72"/><path d="M268 62Q272.5 50 277 62Z"/>
+<rect x="324" y="62" width="9" height="72"/><path d="M324 62Q328.5 50 333 62Z"/>
+</g></symbol>
+<symbol id="sky-china" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<path d="M0 122 L64 122 L64 108 L132 108 L132 120 L200 120 L200 106 L268 106 L268 118 L336 118 L336 108 L390 108 L390 134 L0 134 Z"/>
+<rect x="58" y="88" width="20" height="22"/><path d="M52 88 L68 74 L84 88 Z"/>
+<rect x="194" y="86" width="20" height="22"/><path d="M188 86 L204 72 L220 86 Z"/>
+<rect x="330" y="86" width="20" height="22"/><path d="M324 86 L340 72 L356 86 Z"/>
+<rect x="286" y="74" width="40" height="44"/>
+<path d="M276 74 L306 54 L336 74 Z"/><path d="M282 54 L306 38 L330 54 Z"/>
+<rect x="303" y="26" width="6" height="14"/>
+</g></symbol>
+<symbol id="sky-tur" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<rect x="118" y="94" width="150" height="40"/>
+<path d="M132 94 Q193 38 254 94 Z"/>
+<rect x="191" y="54" width="4" height="14"/>
+<rect x="86" y="104" width="40" height="30"/><rect x="260" y="104" width="40" height="30"/>
+<rect x="60" y="66" width="8" height="68"/><path d="M60 66Q64 54 68 66Z"/>
+<rect x="322" y="66" width="8" height="68"/><path d="M322 66Q326 54 330 66Z"/>
+<rect x="94" y="80" width="7" height="54"/><path d="M94 80Q97.5 70 101 80Z"/>
+<rect x="289" y="80" width="7" height="54"/><path d="M289 80Q292.5 70 296 80Z"/>
+</g></symbol>
+<symbol id="sky-fr" viewBox="0 0 390 150"><g fill="currentColor">
+<rect x="0" y="134" width="390" height="16"/>
+<path fill-rule="evenodd" d="M136 134 L172 76 L212 76 L248 134 Z M170 133 L170 114 Q192 90 214 114 L214 133 Z"/>
+<rect x="164" y="70" width="56" height="8"/>
+<path d="M172 70 L180 46 L204 46 L212 70 Z"/>
+<rect x="174" y="40" width="36" height="7"/>
+<path d="M187 40 L190 18 L194 18 L197 40 Z"/>
+<rect x="190" y="8" width="4" height="12"/>
+</g></symbol>
 <symbol id="g-flame" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c.8 4 5.5 6 5.5 11.2a5.5 5.5 0 0 1-11 0c0-2.8 1.8-4 2.3-6.2 1 .8 1.7 1.8 2 3.2C11.6 8 12.4 5.4 12 2z"/></symbol>
 <symbol id="g-minaret" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1l3 6h-1.5V9h2v2h-2v11h-3V11h-2V9h2V7H9z"/></symbol>
 <symbol id="g-dome" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1h.8v3.2C17 5.6 19 9 19 12v1h2v2h-2v6H5v-6H3v-2h2v-1c0-3 2-6.400 6.200-7.800V1z"/></symbol>
@@ -259,6 +340,7 @@ nav button{font-size:12px}
   <div class="hero"><span class="moon"></span>
     <h1 id="hello">Salom!</h1><p>Bugun tarixdan nimani o'rganamiz?</p>
     <span class="coins" id="coins">0 ball</span>
+    <span class="sky-cap" id="sky-cap"></span>
     <svg class="sk" viewBox="0 0 390 150" preserveAspectRatio="xMidYMax slice"><use href="#sky"/></svg></div>
   <div class="card q"><p class="sub">Kun savoli · to'g'ri javob +10 ball</p><h3 id="dq-text">Yuklanmoqda...</h3><div class="opts" id="opts"></div></div>
   <div class="card"><h3 style="font-size:17px">Ipak yo'li karvoni</h3>
@@ -1633,6 +1715,44 @@ function plPick(i,j){
 $("pl-list").addEventListener("click",e=>{const b=e.target.closest("[data-pl]");if(b){haptic("tap");openPlace(b.dataset.pl)}});
 $("pl-quiz").addEventListener("click",e=>{const b=e.target.closest("[data-i]");if(b)plPick(+b.dataset.i,+b.dataset.j)});
 renderPlaces();
+
+/* ===== ⏰ VAQT MAVZUSI: 06:00–18:00 sariq, 18:00–06:00 ko'k ===== */
+function timeTheme(){
+  const h=new Date().getHours();
+  document.body.classList.toggle("day",h>=6&&h<18);
+}
+timeTheme();
+setInterval(timeTheme,60000);
+
+/* ===== 🌍 TEPA SILSUET: dunyo tarixiy binolari bilan almashinadi ===== */
+const SKYS=[
+  {id:"sky",     n:"🕌 Registon · Samarqand"},
+  {id:"sky-egy", n:"🏜️ Pirimidalar · Misr"},
+  {id:"sky-gr",  n:"🏛️ Akropol · Yunoniston"},
+  {id:"sky-rome",n:"🏟️ Kolizey · Rim"},
+  {id:"sky-ind", n:"🕌 Taj-Mahal · Hindiston"},
+  {id:"sky-china",n:"🧱 Buyuk devor · Xitoy"},
+  {id:"sky-tur", n:"🕌 Aya-Sofiya · Turkiya"},
+  {id:"sky-fr",  n:"🗼 Eyfel minorasi · Parij"}
+];
+let skyI=Math.floor(Math.random()*SKYS.length);
+function drawSky(){
+  const s=SKYS[skyI];
+  document.querySelectorAll(".sk use").forEach(u=>u.setAttribute("href","#"+s.id));
+  const cap=$("sky-cap");
+  if(cap)cap.textContent=s.n;
+}
+function nextSky(){
+  const els=[...document.querySelectorAll(".hero .sk")];
+  els.forEach(e=>e.style.opacity=0);
+  setTimeout(()=>{
+    skyI=(skyI+1)%SKYS.length;
+    drawSky();
+    els.forEach(e=>e.style.opacity=1);
+  },600);
+}
+drawSky();
+setInterval(nextSky,9000);
 
 function bootApp(){renderDaily();store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()})}
 if(!LOCKED){bootApp()}else{UNLOCK_CB=bootApp}   /* token asinxron tekshirilsa — keyin ishga tushadi */
