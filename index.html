@@ -110,6 +110,24 @@ background:linear-gradient(#1B3E92,#14286B 58%,var(--night2))}
 .g-ev.on{opacity:1;animation:pop .3s ease}
 #g-ranks .rk b:last-child{color:var(--gold)}
 
+/* 🎮 o'yin: combo / boss / power-up */
+#g-play{position:relative}
+.g-combo{position:absolute;top:8px;right:8px;font:700 18px var(--serif);color:#FF8C42;animation:comboPulse .45s ease infinite alternate;pointer-events:none;z-index:3}
+@keyframes comboPulse{from{transform:scale(1);text-shadow:0 0 8px rgba(255,140,66,.4)}to{transform:scale(1.25);text-shadow:0 0 18px rgba(255,140,66,.9)}}
+.g-boss{margin-bottom:10px;padding:10px 12px;border:1px solid rgba(224,88,110,.5);border-radius:12px;background:linear-gradient(90deg,rgba(108,36,48,.35),rgba(224,88,110,.12))}
+.g-boss-row{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:#E0586E}
+.g-boss-hpt{color:var(--mute)}
+.g-boss-hp{height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:6px}
+.g-boss-hp i{display:block;height:100%;background:linear-gradient(90deg,#E0586E,#FF8C42);transition:width .4s ease}
+.g-boss.die{animation:bossDie .6s ease forwards}
+@keyframes bossDie{60%{opacity:1;transform:scale(1.06)}to{opacity:0;transform:scale(1.2)}}
+.g-power{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.g-pbtn{flex:1;padding:9px 6px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.06);font-size:12.5px;text-align:center;transition:opacity .2s,transform .1s}
+.g-pbtn:active{transform:scale(.96)}
+.g-pbtn:disabled{opacity:.35;cursor:default}
+.shake{animation:shake .38s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
 nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(10,18,48,.94);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0)}
 nav div{max-width:520px;margin:0 auto;display:flex}
 nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;font-size:12px;color:var(--mute)}
@@ -290,6 +308,11 @@ nav button{font-size:12px}
   </div>
 
   <div id="g-play" style="display:none">
+    <div class="g-combo" id="g-combo" style="display:none">🔥 x2</div>
+    <div class="g-boss" id="g-boss" style="display:none">
+      <div class="g-boss-row"><span class="g-boss-name" id="g-boss-name">👹 Tarix bossi</span><span class="g-boss-hpt" id="g-boss-hpt">3/3</span></div>
+      <div class="g-boss-hp"><i id="g-boss-hp" style="width:100%"></i></div>
+    </div>
     <div class="g-year" id="g-year">1990</div>
     <div class="g-bar"><i id="g-bar" style="width:0%"></i></div>
     <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:6px">
@@ -300,6 +323,11 @@ nav button{font-size:12px}
     <div class="q"><h3 id="g-q"></h3></div>
     <div class="opts" id="g-opts"></div>
     <div class="g-fb" id="g-fb"></div>
+    <div class="g-power" id="g-power">
+      <button type="button" class="g-pbtn" data-p="fifty">✂️ 50/50 (1)</button>
+      <button type="button" class="g-pbtn" data-p="time">⏱ +5s (1)</button>
+      <button type="button" class="g-pbtn" data-p="eye">👁 Ko'k ko'z (1)</button>
+    </div>
   </div>
 
   <div id="g-end" style="display:none">
@@ -1205,6 +1233,7 @@ const G_EVENTS=[
  {y:2024,t:"🤖 sun'iy intellekt kuchaydi"}
 ];
 let gY=G_MIN,gBall=0,gOk=0,gN=0,gT0=0,gTick=null,gQ=null,gLock=false,gPool=[],gEvY=0;
+let gCombo=0,gBoss=null,gPower={fifty:1,time:1,eye:1};
 
 function gMyUid(){try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id)||0}catch(e){return 0}}
 
@@ -1238,13 +1267,73 @@ function gClock(){
   const s=Math.floor((Date.now()-gT0)/1000);
   $("g-clock").textContent="⏱ "+String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 }
+function gEventShow(t){
+  const el=$("g-event");el.textContent=t;el.classList.add("on");
+  clearTimeout(el._to);
+  el._to=setTimeout(()=>el.classList.remove("on"),3500);
+}
 function gEvent(){
   const p=G_EVENTS.filter(e=>e.y<=gY);
   const last=p[p.length-1];
-  if(last&&last.y>gEvY){
-    gEvY=last.y;
-    const el=$("g-event");el.textContent=last.t;el.classList.add("on");
-    setTimeout(()=>el.classList.remove("on"),3500);
+  if(last&&last.y>gEvY){gEvY=last.y;gEventShow(last.t);}
+}
+function gComboUI(){
+  const el=$("g-combo");
+  if(gCombo>=2){el.style.display="block";el.textContent="🔥 x"+gCombo;}
+  else el.style.display="none";
+}
+function gBossUI(){
+  if(!gBoss)return;
+  $("g-boss-hp").style.width=(gBoss.hp/gBoss.max*100)+"%";
+  $("g-boss-hpt").textContent=gBoss.hp+"/"+gBoss.max;
+}
+function gBossCheck(){
+  if(gN>0&&gN%10===0&&!gBoss){
+    gBoss={hp:3,max:3};
+    const b=$("g-boss");b.style.display="block";b.classList.remove("die");
+    gBossUI();
+    gEventShow("👹 Tarix bossi paydo bo'ldi! 3 ta to'g'ri javob = yengilasiz!");
+    haptic("tap");
+  }
+}
+function gBossHit(){
+  if(!gBoss)return;
+  gBoss.hp--;
+  if(gBoss.hp<=0){
+    gBoss=null;
+    const b=$("g-boss");b.classList.add("die");
+    setTimeout(()=>{b.style.display="none";b.classList.remove("die")},650);
+    gBall+=50;
+    gEventShow("💥 Boss yengildi! +50 ball");
+    haptic("done");
+  }else gBossUI();
+}
+function gPowerUI(){
+  const L={fifty:"✂️ 50/50",time:"⏱ +5s",eye:"👁 Ko'k ko'z"};
+  document.querySelectorAll(".g-pbtn").forEach(b=>{
+    const p=b.dataset.p;
+    b.textContent=L[p]+" ("+gPower[p]+")";
+    b.disabled=gPower[p]<=0;
+  });
+}
+function gPowerUse(p){
+  if(!gPower||gPower[p]<=0||gLock||!gQ)return;
+  gPower[p]--;gPowerUI();haptic("tap");
+  if(p==="fifty"){
+    const opts=$("g-opts").querySelectorAll(".opt");
+    const wrong=[...opts].map((_,i)=>i).filter(i=>i!==gQ.a);
+    shuffle(wrong).slice(0,2).forEach(i=>{opts[i].style.opacity=".25";opts[i].disabled=true});
+    gEventShow("✂️ 2 ta noto'g'ri variant olib tashlandi");
+  }else if(p==="time"){
+    const bar=$("g-timer").querySelector("i");
+    bar.style.transition="width 15s linear";bar.style.width="100%";
+    clearTimeout(gQ.to);gQ.to=setTimeout(gTimeout,15000);
+    gEventShow("⏱ +5 soniya qo'shildi");
+  }else if(p==="eye"){
+    const opts=$("g-opts").querySelectorAll(".opt");
+    opts[gQ.a].style.borderColor="#2FD0A0";
+    opts[gQ.a].style.background="rgba(47,208,160,.22)";
+    gEventShow("👁 To'g'ri javob belgilandi");
   }
 }
 function gNext(){
@@ -1260,6 +1349,7 @@ function gNext(){
   bar.style.transition="none";bar.style.width="100%";void bar.offsetWidth;
   bar.style.transition="width 10s linear";bar.style.width="0%";
   clearTimeout(gQ.to);gQ.to=setTimeout(gTimeout,10000);
+  gBossCheck();
 }
 function gPick(i,btn){
   if(gLock||!gQ)return;gLock=true;
@@ -1272,18 +1362,31 @@ function gPick(i,btn){
   opts.forEach((b,j)=>{b.disabled=true;if(j===gQ.a)b.classList.add("ok")});
   if(right){
     gOk++;
+    gCombo++;
+    gComboUI();
     const fast=Math.max(0,Math.round(10-spent));
-    const pts=10+fast;
+    const mult=Math.min(gCombo,5);
+    const pts=(10+fast)*mult;
     gBall+=pts;
     gY=Math.min(G_MAX,gY+1);
     haptic("ok");btn.classList.add("ok");
     $("g-fb").style.color="#2FD0A0";
-    $("g-fb").textContent="✅ To'g'ri! +"+pts+" ball";
+    $("g-fb").textContent="✅ To'g'ri! +"+pts+" ball"+(mult>1?" (x"+mult+" combo)":"");
+    if(gBoss)gBossHit();
+    if(Math.random()<0.3){
+      const keys=["fifty","time","eye"];
+      const k=keys[Math.floor(Math.random()*keys.length)];
+      gPower[k]++;gPowerUI();
+      gEventShow("🎁 Power-up oldingiz: "+({fifty:"✂️ 50/50",time:"⏱ +5s",eye:"👁 Ko'k ko'z"})[k]);
+    }
   }else{
+    gCombo=0;gComboUI();
     gY=Math.max(G_MIN,gY-2);
     haptic("err");opts[i].classList.add("no");
     $("g-fb").style.color="#E0586E";
     $("g-fb").textContent="❌ Noto'g'ri! To'g'ri javob: "+("ABCD"[gQ.a]||"");
+    $("g-play").classList.add("shake");
+    setTimeout(()=>$("g-play").classList.remove("shake"),400);
   }
   gEvent();gStats();
   setTimeout(()=>{if(gY>=G_MAX)gEnd(true);else gNext()},1100);
@@ -1354,6 +1457,9 @@ function gStart(){
   if(LOCKED)return;
   $("g-start").style.display="none";$("g-end").style.display="none";$("g-play").style.display="block";
   gY=G_MIN;gBall=0;gOk=0;gN=0;gEvY=0;gT0=Date.now();gLock=false;
+  gCombo=0;gComboUI();
+  gBoss=null;$("g-boss").style.display="none";$("g-boss").classList.remove("die");
+  gPower={fifty:1,time:1,eye:1};gPowerUI();
   gStats();$("g-event").classList.remove("on");$("g-event").textContent="";
   $("g-clock").textContent="⏱ 00:00";
   const b=$("g-btn");b.disabled=true;b.textContent="Savollar yuklanmoqda...";
@@ -1367,6 +1473,7 @@ function gStart(){
 }
 $("g-btn").onclick=gStart;
 $("g-again").onclick=gStart;
+document.querySelectorAll(".g-pbtn").forEach(b=>b.onclick=()=>gPowerUse(b.dataset.p));
 gDrawBest();
 
 function bootApp(){renderDaily();store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()})}
