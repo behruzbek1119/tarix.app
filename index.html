@@ -1757,5 +1757,6 @@ setInterval(nextSky,9000);
 function bootApp(){renderDaily();store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()})}
 if(!LOCKED){bootApp()}else{UNLOCK_CB=bootApp}   /* token asinxron tekshirilsa — keyin ishga tushadi */
 </script>
+<script src="sync.js"></script>
 </body>
 </html>

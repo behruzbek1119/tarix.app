@@ -184,7 +184,10 @@
       return !q || (String(r.name) + " " + r.cls + " " + r.test).toLowerCase().indexOf(q) >= 0;
     });
     var avg = R.length ? Math.round(R.reduce(function (s, r) { return s + (+r.pct || 0); }, 0) / R.length) : 0;
-    document.getElementById("sb-sum").textContent = R.length + " ta natija · o'rtacha " + avg + "%";
+    var ppl = {};
+    R.forEach(function (r) { ppl[String(r.tg_id || r.name || "?")] = 1; });
+    document.getElementById("sb-sum").textContent =
+      Object.keys(ppl).length + " o'quvchi · " + R.length + " ta natija · o'rtacha " + avg + "%";
     document.getElementById("sb-list").innerHTML = R.map(function (r) {
       var w = Array.isArray(r.wrong) ? r.wrong : [];
       var col = r.pct >= 80 ? "#2FD0A0" : r.pct >= 50 ? "var(--gold)" : "#E0586E";
@@ -210,12 +213,34 @@
     }).catch(function (err) { alert("Xato: " + err.message); });
   });
 
-  if (ls(ADM) === "1") {
+  /* ---------- 📊 tugma: faqat o'qituvchi (admin) tokenida chiqadi ----------
+     #admin bilan ochilgan bo'lsa ham ko'rinadi (zaxira yo'l). */
+  var ADM_HASH = "6f2ed54e24513909c985ff20617167f1abf7aa62cca33788603d4f16bbe6d609";
+
+  function showBtn() {
+    if (document.getElementById("sb-btn")) return;
     var btn = document.createElement("button");
+    btn.id = "sb-btn";
     btn.textContent = "📊";
     btn.setAttribute("aria-label", "Natijalar");
     btn.style.cssText = "position:fixed;right:14px;bottom:calc(86px + env(safe-area-inset-bottom,0));z-index:40;width:46px;height:46px;border-radius:50%;background:var(--lapis);border:2px solid var(--gold);font-size:20px;text-align:center";
     btn.onclick = openPanel;
     document.body.appendChild(btn);
   }
+
+  function checkAdmin() {
+    if (ls(ADM) === "1") { showBtn(); return; }        /* #admin bilan ochilgan */
+    var tok = ls(TOK);
+    if (!tok || !window.crypto || !crypto.subtle || !crypto.subtle.digest) return;
+    try {
+      crypto.subtle.digest("SHA-256", new TextEncoder().encode(tok)).then(function (buf) {
+        var hex = Array.from(new Uint8Array(buf)).map(function (x) {
+          return x.toString(16).padStart(2, "0");
+        }).join("");
+        if (hex === ADM_HASH) showBtn();               /* o'qituvchi tokeni */
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  checkAdmin();
+  window.addEventListener("online", checkAdmin);
 })();
