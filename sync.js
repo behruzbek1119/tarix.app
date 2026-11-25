@@ -68,8 +68,18 @@
   function who() {
     var uu = null;
     try { uu = window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user; } catch (e) {}
-    if (!uu) return { id: 0, name: "Brauzer" };
-    return { id: uu.id || 0, name: ((uu.first_name || "") + " " + (uu.last_name || "")).trim() || uu.username || "Nomsiz" };
+    if (uu) {
+      return { id: uu.id || 0, name: ((uu.first_name || "") + " " + (uu.last_name || "")).trim() || uu.username || "Nomsiz" };
+    }
+    /* Telegram'siz (brauzerda): bir marta ism so'raladi va eslab qolinadi */
+    var nm = null;
+    try { nm = localStorage.getItem("tarix_name"); } catch (e) {}
+    if (!nm) {
+      try { nm = window.prompt ? prompt("Test natijasi kimniki?\nIsmingizni yozing:", "") : ""; } catch (e) { nm = ""; }
+      nm = String(nm || "").trim().slice(0, 40);
+      if (nm) { try { localStorage.setItem("tarix_name", nm); } catch (e) {} }
+    }
+    return { id: 0, name: nm || "Brauzer" };
   }
   function submit(cls, test, score, total, wrong) {
     score = Math.round(score); total = Math.round(total);
