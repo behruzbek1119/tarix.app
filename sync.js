@@ -230,7 +230,7 @@
   function renderRating(list) {
     var el = document.getElementById("ranks");
     if (!el || !list || !list.length) return;
-    var me = (window.u && u && u.first_name) ? u.first_name : "Siz";
+    var me = (typeof u !== "undefined" && u && u.first_name) ? u.first_name : "Siz";
     var rows = list.slice(0, 10).map(function (r, i) {
       var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1) + ".";
       var mine = String(r.name) === me ? ' style="border-color:var(--gold)"' : "";
