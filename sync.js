@@ -213,6 +213,41 @@
     }).catch(function (err) { alert("Xato: " + err.message); });
   });
 
+  /* ---------- 🏆 Umumiy reyting (Supabase) ----------
+     Serverdan o'quvchilar o'rtachasini olib, Reyting bo'limida chiqaramiz. */
+  var _dr = window.drawRating, _rc = null, _rf = false, _rd = false;
+
+  function renderRating(list) {
+    var el = document.getElementById("ranks");
+    if (!el || !list || !list.length) return;
+    var me = (window.u && u && u.first_name) ? u.first_name : "Siz";
+    var rows = list.slice(0, 10).map(function (r, i) {
+      var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1) + ".";
+      var mine = String(r.name) === me ? ' style="border-color:var(--gold)"' : "";
+      return '<div class="rk"' + mine + '><b>' + medal + '</b><span>' + esc(r.name) +
+        '</span><b>' + esc(r.avg_pct) + '%</b></div>';
+    }).join("");
+    var myLine = (P && P.tries) ? '<p class="note" style="margin-top:8px">Siz: o\'rtacha ' +
+      Math.round(P.sumPct / P.tries) + '% · ' + P.tries + ' test · ' + P.pts + ' ball</p>' : "";
+    el.innerHTML = rows +
+      '<p class="note" style="margin-top:8px">Umumiy reyting — o\'rtacha foiz bo\'yicha (barcha testlar asosida).</p>' +
+      myLine;
+  }
+
+  if (typeof _dr === "function") {
+    window.drawRating = function () {
+      try { _dr.apply(this, arguments); } catch (e) {}
+      if (_rd) { renderRating(_rc); return; }
+      if (_rf) return;
+      _rf = true;
+      rpc("rating_top", {}).then(function (d) {
+        _rc = Array.isArray(d) ? d : [];
+        _rd = true; _rf = false;
+        renderRating(_rc);
+      }).catch(function () { _rf = false; });
+    };
+  }
+
   /* ---------- 📊 tugma: faqat o'qituvchi (admin) tokenida chiqadi ----------
      #admin bilan ochilgan bo'lsa ham ko'rinadi (zaxira yo'l). */
   var ADM_HASH = "6f2ed54e24513909c985ff20617167f1abf7aa62cca33788603d4f16bbe6d609";
