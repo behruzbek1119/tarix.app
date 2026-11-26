@@ -200,7 +200,7 @@
       Object.keys(ppl).length + " o'quvchi · " + R.length + " ta natija · o'rtacha " + avg + "%";
     document.getElementById("sb-list").innerHTML = R.map(function (r) {
       var w = Array.isArray(r.wrong) ? r.wrong : [];
-      var col = r.pct >= 80 ? "#059669" : r.pct >= 50 ? "var(--gold)" : "#DC2626";
+      var col = r.pct >= 80 ? "#2FD0A0" : r.pct >= 50 ? "var(--gold)" : "#E0586E";
       return '<div class="card" data-rid="' + esc(r.id) + '">' +
         '<div style="display:flex;justify-content:space-between;gap:8px"><b>' + esc(r.name) + '</b>' +
         '<b style="color:' + col + '">' + esc(r.score) + '/' + esc(r.total) + ' · ' + esc(r.pct) + '%</b></div>' +
@@ -208,7 +208,7 @@
         '<div class="sub">' + esc(fmtDate(r)) + (r.tg_id ? ' · ID ' + esc(r.tg_id) : '') + '</div>' +
         (w.length ? '<details style="margin-top:6px"><summary class="sub">Xatolar: ' + w.length + '</summary>' +
           w.map(function (x) { return '<div class="sub" style="margin-top:4px">• ' + esc(x.q) + '</div>'; }).join("") + '</details>' : '') +
-        '<button data-del="' + esc(r.id) + '" style="margin-top:8px;color:#DC2626;font-size:13px">🗑 O\'chirish</button></div>';
+        '<button data-del="' + esc(r.id) + '" style="margin-top:8px;color:#E0586E;font-size:13px">🗑 O\'chirish</button></div>';
     }).join("") || '<p class="note">Natija topilmadi.</p>';
   }
 
