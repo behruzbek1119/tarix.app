@@ -119,6 +119,15 @@ body.day .pl-hero{background:linear-gradient(135deg,rgba(201,138,24,.5),rgba(255
 .g-year{font:700 26px var(--serif);color:var(--gold);letter-spacing:.02em}
 .g-bar{height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden;margin:8px 0 4px}
 .g-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--tile),var(--gold));transition:width .5s ease}
+.g-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:10px}
+.g-era{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.g-era.era-pop{animation:pop .45s ease;color:var(--gold)}
+.g-top-r{display:flex;gap:12px;align-items:center;font-size:13px;color:var(--mute);white-space:nowrap}
+.g-road2{margin:12px 0 8px}
+.g-road-line{position:relative;height:10px;border-radius:10px;background:rgba(255,255,255,.1)}
+.g-road-line i{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,var(--tile),var(--gold));transition:width .55s ease}
+.g-machine{position:absolute;top:50%;left:0%;transform:translate(-50%,-50%);font-size:20px;line-height:1;transition:left .55s ease;filter:drop-shadow(0 0 7px rgba(255,215,90,.65));z-index:2;pointer-events:none}
+.g-road-marks{display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:6px;letter-spacing:.04em}
 .g-fb{min-height:22px;text-align:center;font-weight:700;margin:8px 0 2px}
 .g-ev{min-height:0;text-align:center;font-size:13.5px;color:var(--gold);opacity:0;transition:opacity .3s;margin-bottom:4px}
 .g-ev.on{opacity:1;animation:pop .3s ease}
@@ -143,12 +152,17 @@ body.day .pl-hero{background:linear-gradient(135deg,rgba(201,138,24,.5),rgba(255
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
 /* 🌍 joylar */
-.pl-card{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;width:100%;transition:transform .15s,border-color .2s}
+.pl-card{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-top:10px;width:100%;transition:transform .15s,border-color .2s}
 .pl-card:active{transform:scale(.98)}
+.pl-thumb{flex:none;width:74px;height:56px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.07);display:grid;place-items:center;border:1px solid var(--line)}
+.pl-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .pl-emoji{font-size:30px;line-height:1;filter:drop-shadow(0 2px 6px rgba(217,174,86,.35))}
 .pl-card b{display:block;font-size:15px}
 .pl-card span{color:var(--mute);font-size:13px}
-.pl-hero{margin-top:14px;padding:20px 16px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(30,75,168,.45),rgba(34,183,176,.25));border:1px solid var(--line)}
+.pl-hero{position:relative;margin-top:14px;padding:20px 16px;border-radius:16px;text-align:center;background:linear-gradient(135deg,rgba(30,75,168,.45),rgba(34,183,176,.25));border:1px solid var(--line);overflow:hidden;min-height:170px;display:flex;align-items:center;justify-content:center}
+.pl-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.pl-hero-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,12,28,.25) 0%,rgba(6,12,28,.55) 55%,rgba(6,12,28,.82) 100%)}
+.pl-hero-txt{position:relative;z-index:2;width:100%}
 .pl-hero .pl-emoji{font-size:52px}
 .pl-hero h3{font:700 24px var(--serif);color:var(--gold);margin-top:8px}
 .pl-hero p{color:#C9D4F2;font-size:13px;margin-top:4px}
@@ -425,10 +439,18 @@ nav button{font-size:12px}
       <div class="g-boss-row"><span class="g-boss-name" id="g-boss-name">👹 Tarix bossi</span><span class="g-boss-hpt" id="g-boss-hpt">3/3</span></div>
       <div class="g-boss-hp"><i id="g-boss-hp" style="width:100%"></i></div>
     </div>
-    <div class="g-year" id="g-year">1990</div>
-    <div class="g-bar"><i id="g-bar" style="width:0%"></i></div>
-    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:6px">
-      <span id="g-stats">Ball: 0</span><span id="g-clock">⏱ 00:00</span>
+    <div class="g-top">
+      <div>
+        <div class="g-year" id="g-year">1990</div>
+        <div class="g-era" id="g-era">90-yillar</div>
+      </div>
+      <div class="g-top-r">
+        <span id="g-stats">Ball: 0</span><span id="g-clock">⏱ 00:00</span>
+      </div>
+    </div>
+    <div class="g-road2">
+      <div class="g-road-line"><i id="g-bar" style="width:0%"></i><span class="g-machine" id="g-machine">🚀</span></div>
+      <div class="g-road-marks"><span>1990</span><span>2000</span><span>2010</span><span>2020</span><span>2025</span></div>
     </div>
     <div class="g-ev" id="g-event"></div>
     <div class="timer" id="g-timer"><i></i></div>
@@ -1387,7 +1409,19 @@ function gLoadPool(){
 
 function gStats(){
   $("g-year").textContent=gY;
-  $("g-bar").style.width=((gY-G_MIN)/G_SPAN*100).toFixed(1)+"%";
+  const pct=Math.max(0,Math.min(100,(gY-G_MIN)/G_SPAN*100)).toFixed(1);
+  $("g-bar").style.width=pct+"%";
+  const mach=$("g-machine");if(mach)mach.style.left=pct+"%";
+  const era=$("g-era");
+  if(era){
+    let txt;
+    if(gY>=2025)txt="🎯 2025 · maqsadga yetdik!";
+    else{const d=Math.floor(gY/10)*10;txt=String(d%100).padStart(2,"0")+"-yillar";}
+    if(era.textContent!==txt){
+      era.textContent=txt;
+      era.classList.remove("era-pop");void era.offsetWidth;era.classList.add("era-pop");
+    }
+  }
   $("g-stats").textContent="Ball: "+gBall+"  |  "+gOk+"/"+gN;
 }
 function gClock(){
@@ -1605,61 +1639,61 @@ gDrawBest();
 
 /* ===== 🌍 TARIXIY JOYLAR ===== */
 const PLACES=[
- {id:"registon",em:"🕌",name:"Registon maydoni",city:"Samarqand",
+ {id:"registon",em:"🕌",name:"Registon maydoni",city:"Samarqand",img:"places/registon.jpg",
   info:"Registon — Samarqand markazidagi mashhur tarixiy maydon. Uch tomonida ulkan madrasalar turadi: <b>Ulug'bek</b>, <b>Sher-Dor</b> va <b>Tilya-Kori</b>. 15-asrda Amir Temur avlodilari davrida qurilgan. Hozirda bu yerda madaniy tadbirlar o'tkaziladi.",
   qs:[{q:"Registon maydoni qaysi shaharda joylashgan?",o:["Buxoro","Samarqand","Xiva","Toshkent"],a:1},
       {q:"Registondagi uchta madrasadan biri qaysi?",o:["Bibixonim","Ulug'bek","Shohi-Zinda","Ark"],a:1},
       {q:"Registon qaysi asrda qurilgan?",o:["13-asr","14-asr","15-asr","16-asr"],a:2},
       {q:"Sher-Dor madrasasida nima tasvirlangan?",o:["Sherlar","Qushlar","Yulduzlar","Dengiz"],a:0}]},
- {id:"afrosiyob",em:"🏛️",name:"Afrosiyob",city:"Samarqand",
+ {id:"afrosiyob",em:"🏛️",name:"Afrosiyob",city:"Samarqand",img:"places/afrosiyob.jpg",
   info:"Afrosiyob — Samarqandning eng qadimiy qismi, <b>7-asrdan 13-asrgacha</b> mavjud bo'lgan ulkan shahar. Eski nomi <b>Marakanda</b>. 1220-yilda Mongol istilosida vayron bo'lgan. Hozirda arxeologik qazilma va muzey bor.",
   qs:[{q:"Afrosiyob qaysi shaharda?",o:["Buxoro","Samarqand","Xiva","Termez"],a:1},
       {q:"Afrosiyobning dastlabki nomi nima edi?",o:["Marakanda","Buxoro","Samarkand","Varaxsha"],a:0},
       {q:"Afrosiyob qaysi asrda vayron bo'lgan?",o:["7-asr","10-asr","13-asr","15-asr"],a:2},
       {q:"Afrosiyob qaysi daryo bo'yida?",o:["Zarafshon","Sirdaryo","Amudaryo","Voxsh"],a:0}]},
- {id:"bibixonim",em:"🕌",name:"Bibixonim masjidi",city:"Samarqand",
+ {id:"bibixonim",em:"🕌",name:"Bibixonim masjidi",city:"Samarqand",img:"places/bibixonim.jpg",
   info:"Bibixonim masjidi — Amir Temur nabirasi <b>Mirzo Ulug'bek</b> tomonidan 15-asrda qurilgan. U <b>Gur-e-Amir</b> (Amir Temur maqbarasi) qarshisida turadi. Ikki minoralik ulkan masjid bo'lgan, hozirda faqat gumbazi qolgan.",
   qs:[{q:"Bibixonim masjidi qaysi shaharda?",o:["Buxoro","Samarqand","Xiva","Shahrisabz"],a:1},
       {q:"Bibixonim masjidini kim qurdirgan?",o:["Amir Temur","Mirzo Ulug'bek","Shahruh","Abdullaxon"],a:1},
       {q:"Bibixonim masjidi qaysi tomonga qaragan?",o:["Registon","Gur-e-Amir","Afrosiyob","Siyob bozori"],a:1},
       {q:"Qaysi asrda qurilgan?",o:["13-asr","14-asr","15-asr","16-asr"],a:2}]},
- {id:"shohizinda",em:"🕌",name:"Shohizinda",city:"Samarqand",
+ {id:"shohizinda",em:"🕌",name:"Shohizinda",city:"Samarqand",img:"places/shohizinda.jpg",
   info:"Shohizinda — Samarqanddagi mashhur <b>qabriston-majmua</b>, 14-17-asrlarda qurilgan. Bu yerda <b>Hazrati Xizr</b> maqbarasi bor (ko'plar u payg'ambar deb hisoblaydi). Gumbazli darvozalar va koshinlar bilan bezatilgan.",
   qs:[{q:"Shohizinda qaysi shaharda?",o:["Buxoro","Samarqand","Xiva","Toshkent"],a:1},
       {q:"Shohizindada kimning maqbarasi bor?",o:["Amir Temur","Hazrati Xizr","Ulug'bek","Ali"],a:1},
       {q:"Shohizinda qaysi asrlarda qurilgan?",o:["10-12-asr","14-17-asr","18-19-asr","20-asr"],a:1},
       {q:"Shohizinda nima?",o:["Masjid","Qabriston","Bozor","Suv havzasi"],a:1}]},
- {id:"amirtemur",em:"🏛️",name:"Amir Temur maqbarasi",city:"Samarqand",
+ {id:"amirtemur",em:"🏛️",name:"Amir Temur maqbarasi",city:"Samarqand",img:"places/amirtemur.jpg",
   info:"Amir Temur maqbarasi — <b>Gur-e-Amir</b> (1405-yil), Samarqand. Bu yerda Amir Temur, o'g'li Mirzo Ulug'bek va boshqa avlodlari dafn etilgan. Ko'k gumbazli ulkan tuzilma, ichida zangori marmar sarchashma bor.",
   qs:[{q:"Amir Temur maqbarasining boshqa nomi?",o:["Gur-e-Amir","Registon","Afrosiyob","Hazrati Imam"],a:0},
       {q:"Amir Temur maqbarasi qaysi shaharda?",o:["Buxoro","Samarqand","Xiva","Shahrisabz"],a:1},
       {q:"Qachon qurilgan?",o:["1370-yil","1405-yil","1500-yil","1600-yil"],a:1},
       {q:"Bu yerda kim dafn etilgan?",o:["Faqat Amir Temur","Amir Temur va avlodalari","Faqat Ulug'bek","Barcha xonlar"],a:1}]},
- {id:"itchanqala",em:"🏰",name:"Itchan-qala",city:"Xiva",
+ {id:"itchanqala",em:"🏰",name:"Itchan-qala",city:"Xiva",img:"places/itchanqala.jpg",
   info:"Itchan-qala — Xivaning <b>ichki shahari</b>, 10-asrda qurilgan. Devor ichida 40 dan ortiq tarixiy bino bor. <b>UNESCO</b> dunyo merosi ro'yxatiga kiritilgan. Kalta minor, Islam Xo'ja minorasi va ko'plab madrasalar shu yerda.",
   qs:[{q:"Itchan-qala qaysi shaharda?",o:["Buxoro","Xiva","Samarqand","Toshkent"],a:1},
       {q:"Itchan-qala nima?",o:["Ichki shahar","Tashqi shahar","Bozor","Dala"],a:0},
       {q:"Itchan-qala qachon qurilgan?",o:["5-asr","10-asr","15-asr","19-asr"],a:1},
       {q:"Itchan-qala UNESCO ro'yxatida?",o:["Ha","Yo'q","Faqat qismi","Hali kiritilmagan"],a:0}]},
- {id:"hazratimam",em:"🕌",name:"Hazrati Imam",city:"Toshkent",
+ {id:"hazratimam",em:"🕌",name:"Hazrati Imam",city:"Toshkent",img:"places/hazratimam.jpg",
   info:"Hazrati Imam majmuasi — Toshkentning eng qadimiy qismida, <b>16-asrda</b> qurilgan. Bu yerda <b>Baroqxon madrasasi</b>, <b>Azizl-Kattalik masjidi</b> va O'zbekistondagi eng qadimiy <b>Quran nusxasi</b> saqlanadi.",
   qs:[{q:"Hazrati Imam qaysi shaharda?",o:["Buxoro","Samarqand","Toshkent","Xiva"],a:2},
       {q:"Hazrati Imam qaysi asrda qurilgan?",o:["10-asr","12-asr","16-asr","19-asr"],a:2},
       {q:"Bu yerda eng qadimiy nima saqlanadi?",o:["Quran nusxasi","Xarita","Tanga","Kashta"],a:0},
       {q:"Hazrati Imaming asosiy qismi nima?",o:["Qasr","Masjid va madrasa","Bozor","Qasr-xona"],a:1}]},
- {id:"chorsu",em:"🏪",name:"Chorsu bozori",city:"Toshkent",
+ {id:"chorsu",em:"🏪",name:"Chorsu bozori",city:"Toshkent",img:"places/chorsu.jpg",
   info:"Chorsu bozori — Toshkent markazidagi eng mashhur <b>sakkizburchak bozor</b>, 19-asrda qurilgan. Qalin devorli gumbaz ostida mahsulotlar sotiladi. Toshkentning ramziy joylaridan biri.",
   qs:[{q:"Chorsu bozori qaysi shaharda?",o:["Buxoro","Samarqand","Toshkent","Xiva"],a:2},
       {q:"Chorsu qanday shaklda?",o:["To'rtburchak","Sakkizburchak","Doira","Uchburchak"],a:1},
       {q:"Chorsu qachon qurilgan?",o:["13-asr","16-asr","19-asr","20-asr"],a:2},
       {q:"Chorsu nima?",o:["Masjid","Bozor","Madrasa","Qasr"],a:1}]},
- {id:"labihauz",em:"⛲",name:"Labi Hauz",city:"Buxoro",
+ {id:"labihauz",em:"⛲",name:"Labi Hauz",city:"Buxoro",img:"places/labihauz.jpg",
   info:"Labi Hauz — Buxorodagi mashhur <b>suv havzasi</b> (hauz), 16-asrda qurilgan. Yonida <b>Nodir Devonbegi madrasasi</b> va ikkita choyxona turadi. Hauz atrofida eski shaqlari bilan o'tirib, choy ichish — an'ana.",
   qs:[{q:"Labi Hauz qaysi shaharda?",o:["Samarqand","Buxoro","Xiva","Toshkent"],a:1},
       {q:"Labi Hauz nima?",o:["Masjid","Suv havzasi","Bozor","Qasr"],a:1},
       {q:"Labi Hauz qachon qurilgan?",o:["10-asr","13-asr","16-asr","19-asr"],a:2},
       {q:"Labi Hauz yonida nima bor?",o:["Stadion","Choyxona va madrasa","Aeroport","Zavod"],a:1}]},
- {id:"poikalyan",em:"🕌",name:"Po-i-Kalyan",city:"Buxoro",
+ {id:"poikalyan",em:"🕌",name:"Po-i-Kalyan",city:"Buxoro",img:"places/poikalyan.jpg",
   info:"Po-i-Kalyan — Buxorodagi ulkan <b>me'moriy majmua</b>: Kalyan minora (12-asr, ~46 metr), Kalyan masjidi va Mir-Arab madrasasi. Minora qadimda olov chirog'i sifatida ishlatilgan.",
   qs:[{q:"Po-i-Kalyan qaysi shaharda?",o:["Samarqand","Buxoro","Xiva","Toshkent"],a:1},
       {q:"Kalyan minora qaysi asrda qurilgan?",o:["10-asr","12-asr","15-asr","17-asr"],a:1},
@@ -1670,14 +1704,15 @@ let plCur=null,plSel=[],plDone=false;
 
 function renderPlaces(){
   $("pl-list").innerHTML=PLACES.map(p=>`<button class="pl-card" data-pl="${p.id}">
-    <span class="pl-emoji">${p.em}</span>
+    <span class="pl-thumb">${p.img?`<img src="${p.img}" alt="${esc(p.name)}" loading="lazy">`:`<span class="pl-emoji">${p.em}</span>`}</span>
     <span style="flex:1"><b>${p.name}</b><span>${p.city}</span></span>
     <span style="color:var(--mute);font-size:18px">›</span></button>`).join("");
 }
 function openPlace(id){
   plCur=PLACES.find(p=>p.id===id)||PLACES[0];
   plDone=false;plSel=[];
-  $("pl-head").innerHTML=`<div class="pl-hero"><div class="pl-emoji">${plCur.em}</div><h3>${plCur.name}</h3><p>${plCur.city}</p></div>`;
+  const heroImg=plCur.img?`<img class="pl-hero-img" src="${plCur.img}" alt="${esc(plCur.name)}">`:"";
+  $("pl-head").innerHTML=`<div class="pl-hero">${heroImg}<div class="pl-hero-shade"></div><div class="pl-hero-txt"><div class="pl-emoji">${plCur.em}</div><h3>${plCur.name}</h3><p>${plCur.city}</p></div></div>`;
   $("pl-info").innerHTML=`<div class="pl-info">${plCur.info}</div>`;
   renderPlQuiz();
   show("place");
@@ -1757,6 +1792,6 @@ setInterval(nextSky,9000);
 function bootApp(){renderDaily();store.get(v=>{try{if(v)Object.assign(P,JSON.parse(v))}catch(e){}P.prog=P.prog||{};refresh();renderDaily()})}
 if(!LOCKED){bootApp()}else{UNLOCK_CB=bootApp}   /* token asinxron tekshirilsa — keyin ishga tushadi */
 </script>
-<script src="sync.js?v=4"></script>
+<script src="sync.js?v=5"></script>
 </body>
 </html>
