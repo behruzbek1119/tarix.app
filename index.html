@@ -1226,15 +1226,29 @@ function attTitle(v){
   if(v.label)return (v.n!==""&&v.n!=null)?(v.label+" "+v.n):v.label;
   return (v.n!==""&&v.n!=null)?v.n+"-variant":"Variant";
 }
+/* 📜 SERTIFIKAT: aralashdagi 1, 2, 3-variantlarni alohida "Sertifikat" bo'limiga ajratadi */
+function sertSplit(){
+  const A=window.ATT;
+  if(!A||!A.groups||A._sert)return;
+  const ar=A.groups.find(g=>g.id==="aralash");
+  if(!ar||ar.variants.length<3)return;
+  const first=ar.variants.slice(0,3);
+  if(first.some((v,i)=>v.n!==i+1))return;              /* faqat 1,2,3 boshda turganda */
+  ar.variants=ar.variants.slice(3);
+  A.groups.unshift({id:"sertifikat",title:"📜 Sertifikat",
+    variants:first.map(v=>Object.assign({},v,{label:"Sertifikat"}))});
+  A._sert=true;
+}
 function openAtt(){
   $("att-grid").innerHTML='<div class="load">Bo\'limlar yuklanmoqda...</div>';
   show("att");
   ensureData("attestatsiya.js",()=>!!(window.ATT&&window.ATT.groups&&window.ATT.groups.length))
     .then(()=>{
+      sertSplit();
       $("att-grid").innerHTML=window.ATT.groups.map(g=>{
         const tot=g.variants.reduce((s,v)=>s+v.questions.length,0);
         const keyed=g.variants.filter(v=>v.a).length;
-        const icon=(g.id==="aralash"||g.id==="k178")?"📋":"📚";
+        const icon=(g.id==="aralash"||g.id==="k178")?"📋":(g.id==="sertifikat"?"📜":"📚");
         return `<button class="class-btn" data-attg="${esc(g.id)}"><div><div class="num">${icon}</div><div class="title">${esc(g.title)}</div></div><small>${g.variants.length} variant · ${tot} savol${keyed?` · ${keyed} tekshiruvli`:""}</small></button>`}).join("");
     })
     .catch(()=>{$("att-grid").innerHTML='<p class="note">Variantlar fayli yuklanmadi. Internetni tekshiring va qayta kirib ko\'ring.</p>'});
