@@ -405,14 +405,14 @@ nav button{font-size:12px}
 </section>
 
 <section class="view" id="v-att">
-  <h2 style="margin-top:22px">Attestatsiya</h2>
-  <p class="sub">Ikki tanlov: aralash attestatsiya yoki har bir sinf yuzasidan. Bo'lim o'qituvchilar uchun.</p>
+  <h2 style="margin-top:22px">📜 Milliy sertifikat yoki attestatsiya?</h2>
+  <p class="sub">Avval turini tanlang — tegishli variantlar ro'yxati ochiladi.</p>
   <div class="att-note">📋 Variantlarda savollar raqam bilan berilgan. ✓ belgisi bor variantlarda to'g'ri javobni tanlab <b>Tekshirish</b> tugmasini bosing — natija va xato savollar avtomatik ko'rsatiladi.</div>
   <div class="class-grid" id="att-grid"><div class="load">Variantlar yuklanmoqda...</div></div>
 </section>
 
 <section class="view" id="v-att-view">
-  <button class="back-btn" data-back="att">&larr; Variantlarga qaytish</button>
+  <button class="back-btn" data-back="att">&larr; Bo'limlarga qaytish</button>
   <h2 id="av-title">Variant</h2><p class="sub" id="av-sub"></p>
   <div id="av-list"></div>
 </section>
@@ -1227,10 +1227,16 @@ function attTitle(v){
   return (v.n!==""&&v.n!=null)?v.n+"-variant":"Variant";
 }
 /* 📜 SERTIFIKAT: aralashdagi 1, 2, 3-variantlarni alohida "Sertifikat" bo'limiga ajratadi */
+const SERT_IDS=["sertifikat","aralash"];   /* Milliy sertifikat to'plami */
 function sertSplit(){
   const A=window.ATT;
-  if(!A||!A.groups||A._sert)return;
+  if(!A||!A.groups)return;
   const ar=A.groups.find(g=>g.id==="aralash");
+  if(ar){ /* "Aralash attestatsiya" aslida MILLIY SERTIFIKAT testi */
+    ar.title="Milliy sertifikat testi";
+    ar.variants.forEach(v=>{if(v.label&&v.label.indexOf("Aralash")===0)v.label="Milliy sertifikat testi"});
+  }
+  if(A._sert)return;
   if(!ar||ar.variants.length<3)return;
   const first=ar.variants.slice(0,3);
   if(first.some((v,i)=>v.n!==i+1))return;              /* faqat 1,2,3 boshda turganda */
@@ -1239,24 +1245,45 @@ function sertSplit(){
     variants:first.map(v=>Object.assign({},v,{label:"Sertifikat"}))});
   A._sert=true;
 }
+/* 2 ta tanlov: 📜 Milliy sertifikat testi  /  📋 Attestatsiya */
+function attCats(){
+  const gs=(window.ATT&&window.ATT.groups)||[];
+  const inSert=g=>SERT_IDS.indexOf(g.id)>=0;
+  const mk=(id,icon,title,f)=>{const g=gs.filter(f);
+    return{id,icon,title,groups:g,
+      n:g.reduce((s,x)=>s+x.variants.length,0),
+      q:g.reduce((s,x)=>s+x.variants.reduce((t,v)=>t+v.questions.length,0),0)};};
+  return [mk("sert","📜","Milliy sertifikat testi",inSert),
+          mk("att","📋","Attestatsiya",g=>!inSert(g))];
+}
+let attCat=null;
 function openAtt(){
   $("att-grid").innerHTML='<div class="load">Bo\'limlar yuklanmoqda...</div>';
   show("att");
   ensureData("attestatsiya.js",()=>!!(window.ATT&&window.ATT.groups&&window.ATT.groups.length))
     .then(()=>{
       sertSplit();
-      $("att-grid").innerHTML=window.ATT.groups.map(g=>{
-        const tot=g.variants.reduce((s,v)=>s+v.questions.length,0);
-        const keyed=g.variants.filter(v=>v.a).length;
-        const icon=(g.id==="aralash"||g.id==="k178")?"📋":(g.id==="sertifikat"?"📜":"📚");
-        return `<button class="class-btn" data-attg="${esc(g.id)}"><div><div class="num">${icon}</div><div class="title">${esc(g.title)}</div></div><small>${g.variants.length} variant · ${tot} savol${keyed?` · ${keyed} tekshiruvli`:""}</small></button>`}).join("");
+      attCat=null;
+      $("att-grid").innerHTML=attCats().map(c=>
+        `<button class="class-btn" data-attc="${c.id}"><div><div class="num">${c.icon}</div><div class="title">${esc(c.title)}</div></div><small>${c.n} variant · ${c.q} savol</small></button>`).join("");
     })
     .catch(()=>{$("att-grid").innerHTML='<p class="note">Variantlar fayli yuklanmadi. Internetni tekshiring va qayta kirib ko\'ring.</p>'});
+}
+function openAttCat(cid){
+  const c=attCats().find(x=>x.id===cid);
+  if(!c){openAtt();return}
+  attCat=cid;
+  $("att-grid").innerHTML=`<button class="back-btn" data-attc="" style="grid-column:1/-1;margin-bottom:8px">&larr; Tanlovga qaytish</button>`+c.groups.map(g=>{
+    const tot=g.variants.reduce((s,v)=>s+v.questions.length,0);
+    const keyed=g.variants.filter(v=>v.a).length;
+    const icon=SERT_IDS.indexOf(g.id)>=0?"📜":(g.id==="k178"?"📋":"📚");
+    return `<button class="class-btn" data-attg="${esc(g.id)}"><div><div class="num">${icon}</div><div class="title">${esc(g.title)}</div></div><small>${g.variants.length} variant · ${tot} savol${keyed?` · ${keyed} tekshiruvli`:""}</small></button>`}).join("");
+  window.scrollTo(0,0);
 }
 function openAttGroup(gid){
   const g=((window.ATT&&window.ATT.groups)||[]).find(x=>x.id===gid);
   if(!g){toast("Bo'lim topilmadi.");return}
-  $("att-grid").innerHTML=`<button class="back-btn" data-attg="" style="grid-column:1/-1;margin-bottom:8px">&larr; Tanlovga qaytish</button>`+g.variants.map(v=>{
+  $("att-grid").innerHTML=`<button class="back-btn" data-attc="${attCat||""}" style="grid-column:1/-1;margin-bottom:8px">&larr; Bo'limlarga qaytish</button>`+g.variants.map(v=>{
     const keyed=!!v.a&&v.a.length===v.questions.length;
     const full=v.questions.length>=45;
     return `<button class="class-btn" data-att="${esc(v.id!==undefined?v.id:v.n)}"><div><div class="num">${v.n||"★"}</div><div class="title">${esc(attTitle(v))}</div></div><small>${keyed?"✓ ":""}${v.questions.length} savol${keyed?" · tekshiruvli":(full?"":" · qisman")}</small></button>`}).join("");
@@ -1369,6 +1396,7 @@ const cb=e.target.closest("[data-cls]");if(cb){openClass(cb.dataset.cls);return}
 const sb=e.target.closest("[data-step]");if(sb){stepGo(+sb.dataset.step);return}
 const tb=e.target.closest("[data-topic]");if(tb){openTopic(+tb.dataset.topic);return}
 const av=e.target.closest("[data-att]");if(av){openVariant(av.dataset.att);return}
+const ac=e.target.closest("[data-attc]");if(ac){ac.dataset.attc?openAttCat(ac.dataset.attc):openAtt();return}
 const ag=e.target.closest("[data-attg]");if(ag){ag.dataset.attg?openAttGroup(ag.dataset.attg):openAtt();return}
 const qo=e.target.closest("[data-qi]");if(qo){
   if(avDone||!avV)return;
